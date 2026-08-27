@@ -33,7 +33,7 @@ const pool = new Pool(
     : {
         user: process.env.DB_USER || 'postgres',
         host: process.env.DB_HOST || 'localhost',
-        database: process.env.DB_NAME || 'webapptiens',
+        database: process.env.DB_NAME || 'webmeclibr',
         password: process.env.DB_PASSWORD || 'postgres',
         port: process.env.DB_PORT || 5432,
       }
@@ -55,7 +55,7 @@ async function migrateTable(tableName, imageColumn) {
     const val = row[imageColumn];
     if (typeof val === 'string' && val.startsWith('data:image')) {
       try {
-        const url = await uploadToCloudinary(val, 'webapptiens');
+        const url = await uploadToCloudinary(val, 'webmeclibr');
         await pool.query(`UPDATE ${tableName} SET ${imageColumn} = $1 WHERE id = $2`, [url, row.id]);
         migrated++;
         console.log(`  ${tableName}#${row.id}: base64 → ${url}`);
@@ -80,7 +80,7 @@ async function migrateArrayTable(tableName, imageColumn) {
     for (let i = 0; i < images.length; i++) {
       if (typeof images[i] === 'string' && images[i].startsWith('data:image')) {
         try {
-          images[i] = await uploadToCloudinary(images[i], 'webapptiens');
+          images[i] = await uploadToCloudinary(images[i], 'webmeclibr');
           changed = true;
         } catch (e) {
           console.error(`  ${tableName}#${row.id}[${i}]: ERROR - ${e.message}`);

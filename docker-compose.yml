@@ -3,7 +3,7 @@ version: '3.8'
 services:
   app:
     build: .
-    container_name: webapptiens
+    container_name: webmeclibr
     restart: always
     ports:
       - "3001:3001"
@@ -11,31 +11,31 @@ services:
       - NODE_ENV=production
       - PORT=3001
       - DB_HOST=postgres
-      - DB_NAME=db-webapptiens
+      - DB_NAME=db-webmeclibr
       - DB_USER=postgres
       - DB_PASSWORD=${DB_PASSWORD:-123456}
       - DB_PORT=5432
     depends_on:
       - postgres
     networks:
-      - webapptiens-net
+      - webmeclibr-net
 
   postgres:
     image: postgres:16-alpine
-    container_name: webapptiens-db
+    container_name: webmeclibr-db
     restart: always
     environment:
-      - POSTGRES_DB=webapptiens
+      - POSTGRES_DB=webmeclibr
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=${DB_PASSWORD:-123456}
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./init-db.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
-      - webapptiens-net
+      - webmeclibr-net
 
 networks:
-  webapptiens-net:
+  webmeclibr-net:
     driver: bridge
 
 volumes:

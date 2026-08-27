@@ -1,10 +1,10 @@
 -- ========== WEBAPPTIENS DATABASE SCHEMA ==========
 
 -- Create database
-CREATE DATABASE webapptiens;
+CREATE DATABASE webmeclibr;
 
 -- Connect to database
-\c webapptiens;
+\c webmeclibr;
 
 -- Products table
 CREATE TABLE products (

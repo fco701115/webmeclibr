@@ -1,5 +1,5 @@
 -- ========== MIGRACION: Agregar tablas y columnas faltantes ==========
--- Ejecutar: psql -U postgres -d webapptiens -f migrate_missing_tables.sql
+-- Ejecutar: psql -U postgres -d webmeclibr -f migrate_missing_tables.sql
 
 -- ========== PRODUCTS: agregar columnas faltantes ==========
 DO $$ BEGIN
