@@ -80,10 +80,10 @@ app.get(/^\/categoria\/[^/]+\/[^/]+-\d+$/, async (req, res) => {
       images = [p.image];
     }
     const imageUrl = images.length > 0 ? images[0] : '';
-    const absoluteImageUrl = imageUrl.startsWith('http') ? imageUrl : `http://13.140.153.222:3002${imageUrl}`;
+    const absoluteImageUrl = imageUrl.startsWith('http') ? imageUrl : `http://13.140.153.222:3001${imageUrl}`;
     const description = p.description ? p.description.replace(/<[^>]*>/g, '').substring(0, 200) : '';
     const ogTitle = p.name || 'WebMeclibr';
-    const ogUrl = `http://13.140.153.222:3002${req.path}`;
+    const ogUrl = `http://13.140.153.222:3001${req.path}`;
 
     const html = require('fs').readFileSync(path.join(__dirname, 'index.html'), 'utf8');
     const secureImageUrl = imageUrl.startsWith('https') ? imageUrl : absoluteImageUrl;
@@ -160,20 +160,27 @@ const CACHE_TTL = 15000; // 15 seconds
 
 // Auto-migrate: add missing columns to orders table
 async function autoMigrate() {
-  const columns = [
-    ['address_type', "VARCHAR(50) DEFAULT 'Casa'"],
-    ['address_street', "TEXT DEFAULT ''"],
-    ['address_locality', "TEXT DEFAULT ''"],
-    ['address_instructions', "TEXT DEFAULT ''"],
-    ['address_neighborhood', "TEXT DEFAULT ''"],
-    ['address_city', "TEXT DEFAULT ''"],
-    ['address_zip', "TEXT DEFAULT ''"]
-  ];
   try {
+    // Check if orders table exists
+    const tableCheck = await pool.query(
+      "SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'orders')"
+    );
+    if (!tableCheck.rows[0].exists) {
+      console.log('Tabla orders no existe aún, omitiendo auto-migración');
+      return;
+    }
+    const columns = [
+      ['address_type', "VARCHAR(50) DEFAULT 'Casa'"],
+      ['address_street', "TEXT DEFAULT ''"],
+      ['address_locality', "TEXT DEFAULT ''"],
+      ['address_instructions', "TEXT DEFAULT ''"],
+      ['address_neighborhood', "TEXT DEFAULT ''"],
+      ['address_city', "TEXT DEFAULT ''"],
+      ['address_zip', "TEXT DEFAULT ''"]
+    ];
     for (const [col, type] of columns) {
       await pool.query(`ALTER TABLE orders ADD COLUMN IF NOT EXISTS ${col} ${type}`);
     }
-    // Fix status default
     await pool.query("ALTER TABLE orders ALTER COLUMN status SET DEFAULT 'Pendiente'");
     await pool.query("UPDATE orders SET status = 'Pendiente' WHERE status = 'pending'");
     console.log('Auto-migración de orders completada');
