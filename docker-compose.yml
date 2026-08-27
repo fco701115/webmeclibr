@@ -6,10 +6,10 @@ services:
     container_name: webmeclibr
     restart: always
     ports:
-      - "3001:3001"
+      - "3000:3000"
     environment:
       - NODE_ENV=production
-      - PORT=3001
+      - PORT=3000
       - DB_HOST=postgres
       - DB_NAME=db-webmeclibr
       - DB_USER=postgres
