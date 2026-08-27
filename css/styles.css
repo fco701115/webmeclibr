@@ -132,6 +132,7 @@ button {
 .mobile-search-bar {
   display: none;
   background: #f2cb2f;
+  color: #151414;
   padding: 12px 15px;
   align-items: center;
   gap: 10px;
@@ -259,7 +260,7 @@ button {
 
 .mobile-menu-btn {
   display: none;
-  color: #fff;
+  color: #151414;
   font-size: 1.4rem;
   padding: 8px;
   order: -1;
@@ -270,6 +271,7 @@ button {
 /* ========== NAVBAR ========== */
 .navbar {
   background: #f2cb2f;
+  color: #151414;
   border-top: 1px solid rgba(255, 255, 255, 0.15);
 }
 
@@ -319,6 +321,7 @@ button {
   padding: 14px 20px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   background: #f2cb2f;
+  color: #151414;
 }
 
 .mobile-nav .nav-link.active {
@@ -488,7 +491,7 @@ button {
 .banner-btn {
   display: inline-block;
   background: #f2cb2f;
-  color: #ffffff;
+  color: #151414;
   padding: 12px 30px;
   font-weight: 700;
   font-size: 0.9rem;
@@ -552,7 +555,7 @@ button {
 .side-banner-btn {
   display: inline-block;
   background: #f2cb2f;
-  color: #fff;
+  color: #151414;
   padding: 8px 18px;
   border-radius: 6px;
   text-decoration: none;
@@ -928,7 +931,7 @@ button {
 
 .product-action-btn:hover {
   background: #f2cb2f;
-  color: #fff;
+  color: #151414;
 }
 
 .product-action-btn.wishlist-active {
@@ -997,7 +1000,7 @@ button {
   width: 100%;
   height: 35px;
   background: #f2cb2f;
-  color: #fff;
+  color: #151414;
   border: none;
   border-radius: 0 0 0 0;
   font-size: 0.9rem;
@@ -1356,7 +1359,7 @@ button {
   padding: 16px 20px;
   border-bottom: 1px solid #eee;
   background: #f2cb2f;
-  color: #fff;
+  color: #151414;
 }
 
 .wishlist-panel-header h3 {
@@ -1591,7 +1594,7 @@ button {
   width: 100%;
   padding: 12px;
   background: #f2cb2f;
-  color: #fff;
+  color: #151414;
   border: none;
   border-radius: var(--radius);
   font-size: 0.95rem;
@@ -1912,7 +1915,7 @@ button {
   width: 100%;
   padding: 12px;
   background: #f2cb2f;
-  color: #fff;
+  color: #151414;
   border: none;
   border-radius: var(--radius);
   font-size: 0.85rem;
@@ -1988,7 +1991,7 @@ button {
 .detail-share a:hover,
 .detail-share a.active {
   background: #f2cb2f;
-  color: #fff;
+  color: #151414;
 }
 
 .detail-info-items {
@@ -2429,7 +2432,7 @@ button {
   align-self: flex-start;
   padding: 10px 20px;
   background: #f2cb2f;
-  color: #fff;
+  color: #151414;
   border: none;
   border-radius: var(--radius);
   font-size: 0.85rem;
@@ -2937,7 +2940,7 @@ button {
   margin-top: 20px;
   padding: 16px;
   background: #f2cb2f;
-  color: #fff;
+  color: #151414;
   border: none;
   border-radius: var(--radius);
   font-size: 1rem;
@@ -3190,6 +3193,7 @@ button {
     padding: 8px 10px;
     gap: 8px;
     background: #f2cb2f;
+    color: #151414;
   }
 
   .header-inner .icon-btn {
@@ -4100,7 +4104,7 @@ button {
   align-items: center;
   padding: 12px 15px;
   background: #f2cb2f;
-  color: #fff;
+  color: #151414;
   font-weight: 600;
   position: sticky;
   top: 0;
@@ -4191,7 +4195,7 @@ button {
   width: 100%;
   padding: 14px;
   background: #f2cb2f;
-  color: #fff;
+  color: #151414;
   border: none;
   border-radius: 8px;
   font-size: 1rem;
@@ -4661,6 +4665,7 @@ button {
   width: 52px;
   height: 52px;
   background: #f2cb2f;
+  color: #151414;
   border-radius: 50%;
   display: flex;
   flex-direction: column;
@@ -4750,7 +4755,7 @@ button {
   width: 100%;
   padding: 12px;
   background: #f2cb2f;
-  color: #fff;
+  color: #151414;
   border: none;
   border-radius: 6px;
   font-size: 16px;
@@ -4827,7 +4832,7 @@ button {
 
 .admin-user-info i {
   background: #f2cb2f;
-  color: #fff;
+  color: #151414;
   border-radius: 50%;
   width: 32px;
   height: 32px;
@@ -6557,7 +6562,7 @@ button {
 
 .contact-submit-btn {
   background: #f2cb2f;
-  color: #fff;
+  color: #151414;
   border: none;
   border-radius: var(--radius);
   padding: 12px 32px;
@@ -6595,7 +6600,7 @@ button {
   height: 50px;
   border-radius: 50%;
   background: #f2cb2f;
-  color: #fff;
+  color: #151414;
   display: flex;
   align-items: center;
   justify-content: center;
