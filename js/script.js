@@ -3436,9 +3436,34 @@ async function fetchMeliProduct() {
   btn.disabled = true;
 
   try {
-    const res = await fetch('/api/fetch-meli?url=' + encodeURIComponent(url));
-    const data = await res.json();
-    if (!res.ok) { alert(data.error || 'Error al obtener datos'); return; }
+    // Extract IDs directly from URL
+    let itemId = null;
+    let catalogId = null;
+
+    const itemIdMatch = url.match(/(ML[A-Z]+-\d+)/);
+    const filterItemMatch = url.match(/item_id[:=](ML[A-Z]+-\d+)/);
+    const catalogMatch = url.match(/\/p\/(ML[A-Z]+\d+)/);
+    const upMatch = url.match(/\/up\/(ML[A-Z]+\d+)/);
+
+    if (itemIdMatch) itemId = itemIdMatch[1];
+    else if (filterItemMatch) itemId = filterItemMatch[1];
+    else if (catalogMatch) catalogId = catalogMatch[1];
+    else if (upMatch) itemId = upMatch[1];
+
+    let data = null;
+
+    // Try server endpoint first
+    try {
+      const res = await fetch('/api/fetch-meli?url=' + encodeURIComponent(url));
+      if (res.ok) data = await res.json();
+    } catch (_) {}
+
+    // If server failed, try client-side via CORS proxy
+    if (!data) {
+      data = await fetchViaProxy(url, itemId, catalogId);
+    }
+
+    if (!data) { alert('No se pudo obtener el producto. Verifica la URL.'); return; }
 
     if (data.name) document.getElementById('productName').value = data.name;
     if (data.price) document.getElementById('productPrice').value = data.price;
@@ -3464,11 +3489,136 @@ async function fetchMeliProduct() {
 
     alert('Datos cargados correctamente. Revisa los campos y selecciona la categoría.');
   } catch (err) {
-    alert('Error de conexión: ' + err.message);
+    alert('Error: ' + err.message);
   } finally {
     btn.innerHTML = originalText;
     btn.disabled = false;
   }
+}
+
+async function fetchViaProxy(url, itemId, catalogId) {
+  const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url);
+
+  try {
+    const res = await fetch(proxyUrl);
+    if (!res.ok) return null;
+    const html = await res.text();
+
+    // Try to find __PRELOADED_STATE__ JSON
+    const stateMatch = html.match(/window\.__PRELOADED_STATE__\s*=\s*(\{[\s\S]*?\});\s*<\/script>/);
+    if (stateMatch) {
+      try {
+        const state = JSON.parse(stateMatch[1]);
+        const ps = state.initialState || state;
+        const product = ps.item || ps.product || {};
+        if (product.title) {
+          return parseMeliState(product);
+        }
+      } catch (_) {}
+    }
+
+    // Try JSON-LD structured data
+    const jsonLdMatch = html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g);
+    if (jsonLdMatch) {
+      for (const match of jsonLdMatch) {
+        try {
+          const jsonStr = match.replace(/<script type="application\/ld\+json">/i, '').replace(/<\/script>/i, '');
+          const json = JSON.parse(jsonStr);
+          if (json['@type'] === 'Product' || json.name) {
+            return parseJsonLd(json);
+          }
+        } catch (_) {}
+      }
+    }
+
+    // Parse HTML directly
+    return parseMeliHtml(html);
+  } catch (_) {
+    return null;
+  }
+}
+
+function parseMeliState(product) {
+  const price = product.price?.amount || product.price || 0;
+  const originalPrice = product.original_price || product.originalPrice || null;
+  const discount = (originalPrice && originalPrice > price) ? Math.round((1 - price / originalPrice) * 100) : 0;
+
+  const colors = [];
+  const sizes = [];
+  const chars = [];
+  const skipAttrs = ['COLOR', 'MAIN_COLOR', 'SIZE', 'SIZES', 'BRAND', 'MODEL'];
+
+  (product.attributes || []).forEach(attr => {
+    const val = attr.value_name || attr.value || '';
+    if (!val) return;
+    if (['COLOR', 'MAIN_COLOR'].includes(attr.id)) colors.push(val);
+    else if (['SIZE', 'SIZES'].includes(attr.id)) sizes.push(val);
+    else if (!skipAttrs.includes(attr.id)) chars.push(`${attr.name || attr.id}: ${val}`);
+  });
+
+  (product.variations || []).forEach(v => {
+    (v.attributes || []).forEach(attr => {
+      const val = attr.value_name || '';
+      if (!val) return;
+      if (['COLOR', 'MAIN_COLOR'].includes(attr.id) && !colors.includes(val)) colors.push(val);
+      if (['SIZE', 'SIZES'].includes(attr.id) && !sizes.includes(val)) sizes.push(val);
+    });
+  });
+
+  const images = (product.pictures || []).slice(0, 5).map(p => p.url || p.secure_url);
+
+  return {
+    name: product.title || '',
+    price, original_price: originalPrice, discount,
+    colors: colors.join(', '), sizes: sizes.join(', '),
+    description: product.description || '',
+    images, characteristics: chars
+  };
+}
+
+function parseJsonLd(json) {
+  const offers = json.offers || {};
+  const price = parseFloat(offers.price || 0);
+  const images = (json.image || []).slice(0, 5).map(i => typeof i === 'string' ? i : i.url || '');
+
+  return {
+    name: json.name || '',
+    price, original_price: null, discount: 0,
+    colors: '', sizes: '',
+    description: json.description || '',
+    images, characteristics: []
+  };
+}
+
+function parseMeliHtml(html) {
+  const titleMatch = html.match(/<h1[^>]*class="[^"]*ui-pdp-title[^"]*"[^>]*>([^<]+)<\/h1>/)
+    || html.match(/<h1[^>]*>([^<]+)<\/h1>/);
+  const priceMatch = html.match(/andes-money-amount__fraction[^>]*>([^<]+)</);
+  const origMatch = html.match(/andes-money-amount--previous[\s\S]*?andes-money-amount__fraction[^>]*>([^<]+)</);
+  const discMatch = html.match(/andes-money-amount__discount[^>]*>([^<]+)/);
+  const descMatch = html.match(/ui-pdp-description__content[^>]*>([\s\S]*?)<\/p>/);
+
+  if (!titleMatch) return null;
+
+  const title = titleMatch[1].trim();
+  const price = priceMatch ? parseFloat(priceMatch[1].replace(/[,.]/g, '')) : 0;
+  const originalPrice = origMatch ? parseFloat(origMatch[1].replace(/[,.]/g, '')) : null;
+  const discount = discMatch ? parseInt(discMatch[1]) : ((originalPrice && originalPrice > price) ? Math.round((1 - price / originalPrice) * 100) : 0);
+  const description = descMatch ? descMatch[1].replace(/<[^>]+>/g, '').trim() : '';
+
+  const images = [];
+  const imgMatches = html.match(/ui-pdp-image__image[^"]*"[^"]*src="([^"]+)"/g);
+  if (imgMatches) {
+    imgMatches.slice(0, 5).forEach(m => {
+      const src = m.match(/src="([^"]+)"/);
+      if (src) images.push(src[1]);
+    });
+  }
+
+  return {
+    name: title, price, original_price: originalPrice, discount,
+    colors: '', sizes: '', description, images, characteristics: []
+  };
 }
 
 async function editProduct(id) {
