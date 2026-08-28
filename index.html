@@ -398,6 +398,9 @@
           <a href="#" class="admin-nav-item" onclick="showAdminSection('reviews', this)">
             <i class="fas fa-star"></i> Valoraciones
           </a>
+          <a href="#" class="admin-nav-item" onclick="showAdminSection('blogs', this)">
+            <i class="fas fa-blog"></i> Blogs
+          </a>
           <a href="#" class="admin-nav-item logout" onclick="handleAdminLogout()">
             <i class="fas fa-sign-out-alt"></i> Cerrar sesión
           </a>
@@ -611,6 +614,32 @@
                 </tr>
               </thead>
               <tbody id="adminReviewsTable"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Blogs -->
+        <div class="admin-section" id="adminBlogs" style="display: none;">
+          <div class="admin-section-header">
+            <h2>Blogs</h2>
+            <button class="admin-add-btn" onclick="showBlogModal()">
+              <i class="fas fa-plus"></i> Agregar Blog
+            </button>
+          </div>
+          <div class="admin-table-container">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Imagen</th>
+                  <th>Título</th>
+                  <th>Autor</th>
+                  <th>Activo</th>
+                  <th>Fecha</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="adminBlogsTable"></tbody>
             </table>
           </div>
         </div>
@@ -874,6 +903,59 @@
       </div>
     </div>
 
+    <!-- Blog Modal -->
+    <div class="admin-modal" id="blogModal" style="display: none;">
+      <div class="admin-modal-content admin-modal-lg">
+        <div class="admin-modal-header">
+          <h3 id="blogModalTitle">Agregar Blog</h3>
+          <button class="admin-modal-close" onclick="closeBlogModal()">&times;</button>
+        </div>
+        <div class="admin-modal-body">
+          <input type="hidden" id="blogId">
+          <div class="admin-input-group">
+            <label>Título *</label>
+            <input type="text" id="blogTitle" placeholder="Título del artículo">
+          </div>
+          <div class="admin-input-group">
+            <label>Extracto</label>
+            <textarea id="blogExcerpt" rows="2" placeholder="Breve resumen del artículo"></textarea>
+          </div>
+          <div class="admin-input-group">
+            <label>Contenido</label>
+            <textarea id="blogContent" rows="6" placeholder="Contenido completo del artículo"></textarea>
+          </div>
+          <div class="admin-form-row">
+            <div class="admin-input-group">
+              <label>Autor</label>
+              <input type="text" id="blogAuthor" placeholder="Nombre del autor">
+            </div>
+            <div class="admin-input-group">
+              <label>Activo</label>
+              <select id="blogActive">
+                <option value="true">Sí</option>
+                <option value="false">No</option>
+              </select>
+            </div>
+          </div>
+          <div class="admin-input-group">
+            <label>Imagen</label>
+            <div class="admin-image-upload" onclick="document.getElementById('blogImageInput').click()">
+              <img id="blogImagePreview" src="" style="display: none;">
+              <div id="blogImagePlaceholder">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <p>Click para subir imagen (800x500 recomendado)</p>
+              </div>
+            </div>
+            <input type="file" id="blogImageInput" accept="image/*" style="display: none;" onchange="previewBlogImage(event)">
+          </div>
+        </div>
+        <div class="admin-modal-footer">
+          <button class="admin-modal-cancel" onclick="closeBlogModal()">Cancelar</button>
+          <button class="admin-modal-save" onclick="saveBlog()">Guardar</button>
+        </div>
+      </div>
+    </div>
+
     <!-- Order Detail Modal -->
     <div class="admin-modal" id="orderDetailModal" style="display: none;">
       <div class="admin-modal-content admin-modal-lg">
@@ -1094,6 +1176,12 @@
       <div class="products-grid" id="productsGrid"></div>
     </section>
 
+    <!-- BLOG -->
+    <section class="blog-section" id="blogSection">
+      <h2 class="section-title">Blog de Moda</h2>
+      <div class="blog-grid" id="blogGrid"></div>
+    </section>
+
   </div>
 
   <!-- ===== CATEGORY VIEW ===== -->
@@ -1114,6 +1202,13 @@
   <div id="detailView" style="display:none">
     <section class="detail-section">
       <div class="detail-inner" id="productDetail"></div>
+    </section>
+  </div>
+
+  <!-- ===== BLOG DETAIL VIEW ===== -->
+  <div id="blogDetailView" style="display:none">
+    <section class="blog-detail-section">
+      <div class="blog-detail-inner" id="blogDetailContent"></div>
     </section>
   </div>
 

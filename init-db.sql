@@ -97,6 +97,27 @@ CREATE TABLE IF NOT EXISTS users (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Blogs table
+CREATE TABLE IF NOT EXISTS blogs (
+  id SERIAL PRIMARY KEY,
+  title VARCHAR(255) NOT NULL,
+  excerpt TEXT DEFAULT '',
+  content TEXT DEFAULT '',
+  image TEXT,
+  author VARCHAR(255) DEFAULT 'Admin',
+  active BOOLEAN DEFAULT true,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Blog comments
+CREATE TABLE IF NOT EXISTS blog_comments (
+  id SERIAL PRIMARY KEY,
+  blog_id INTEGER REFERENCES blogs(id) ON DELETE CASCADE,
+  user_name VARCHAR(255) NOT NULL,
+  comment TEXT DEFAULT '',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Insert sample products
 INSERT INTO products (name, price, original_price, discount, rating, reviews, category, image, description) VALUES
 ('Blusa para dama color gris', 1799.99, 2499.99, 28, 4.8, 124, 'Blusas', 'https://images.unsplash.com/photo-1564257631407-4deb1f99d992?w=600&h=750&fit=crop', 'Blusa elegante para dama en color gris.'),

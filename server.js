@@ -791,6 +791,140 @@ app.get('/api/debug/tables/:name', async (req, res) => {
   }
 });
 
+// ========== BLOGS ==========
+
+// GET all active blogs
+app.get('/api/blogs', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM blogs WHERE active = true ORDER BY created_at DESC');
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Error fetching blogs:', err);
+    res.status(500).json({ error: 'Error al obtener blogs' });
+  }
+});
+
+// GET all blogs (admin)
+app.get('/api/blogs/all', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM blogs ORDER BY created_at DESC');
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Error fetching all blogs:', err);
+    res.status(500).json({ error: 'Error al obtener blogs' });
+  }
+});
+
+// GET blog by id
+app.get('/api/blogs/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await pool.query('SELECT * FROM blogs WHERE id = $1', [id]);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Blog no encontrado' });
+    }
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error('Error fetching blog:', err);
+    res.status(500).json({ error: 'Error al obtener blog' });
+  }
+});
+
+// POST create blog
+app.post('/api/blogs', async (req, res) => {
+  try {
+    const { title, excerpt, content, image, author, active } = req.body;
+    if (!title) return res.status(400).json({ error: 'El título es requerido' });
+    const result = await pool.query(
+      `INSERT INTO blogs (title, excerpt, content, image, author, active) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
+      [title, excerpt || '', content || '', image || null, author || 'Admin', active !== false]
+    );
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    console.error('Error creating blog:', err);
+    res.status(500).json({ error: 'Error al crear blog' });
+  }
+});
+
+// PUT update blog
+app.put('/api/blogs/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, excerpt, content, image, author, active } = req.body;
+    if (!title) return res.status(400).json({ error: 'El título es requerido' });
+    const result = await pool.query(
+      `UPDATE blogs SET title=$1, excerpt=$2, content=$3, image=$4, author=$5, active=$6 WHERE id=$7 RETURNING *`,
+      [title, excerpt || '', content || '', image || null, author || 'Admin', active !== false, id]
+    );
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Blog no encontrado' });
+    }
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error('Error updating blog:', err);
+    res.status(500).json({ error: 'Error al actualizar blog' });
+  }
+});
+
+// DELETE blog
+app.delete('/api/blogs/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await pool.query('DELETE FROM blogs WHERE id = $1 RETURNING *', [id]);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Blog no encontrado' });
+    }
+    res.json({ message: 'Blog eliminado', blog: result.rows[0] });
+  } catch (err) {
+    console.error('Error deleting blog:', err);
+    res.status(500).json({ error: 'Error al eliminar blog' });
+  }
+});
+
+// GET blog comments
+app.get('/api/blogs/:id/comments', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await pool.query('SELECT * FROM blog_comments WHERE blog_id = $1 ORDER BY created_at DESC', [id]);
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Error fetching blog comments:', err);
+    res.status(500).json({ error: 'Error al obtener opiniones' });
+  }
+});
+
+// POST blog comment
+app.post('/api/blogs/:id/comments', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { user_name, comment } = req.body;
+    if (!user_name || !comment) return res.status(400).json({ error: 'Nombre y comentario son requeridos' });
+    const result = await pool.query(
+      'INSERT INTO blog_comments (blog_id, user_name, comment) VALUES ($1, $2, $3) RETURNING *',
+      [id, user_name, comment]
+    );
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    console.error('Error creating blog comment:', err);
+    res.status(500).json({ error: 'Error al crear opinión' });
+  }
+});
+
+// DELETE blog comment (admin)
+app.delete('/api/blogs/comments/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await pool.query('DELETE FROM blog_comments WHERE id = $1 RETURNING *', [id]);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Opinión no encontrada' });
+    }
+    res.json({ message: 'Opinión eliminada' });
+  } catch (err) {
+    console.error('Error deleting blog comment:', err);
+    res.status(500).json({ error: 'Error al eliminar opinión' });
+  }
+});
+
 // ========== SPA FALLBACK ==========
 // Serve index.html for client-side routes (product pages, etc.)
 app.use((req, res, next) => {

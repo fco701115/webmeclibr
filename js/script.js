@@ -1503,7 +1503,7 @@ function changeDetailImg(index) {
 function showView(view) {
   currentView = view;
   localStorage.setItem('currentView', view);
-  const views = ['homeView', 'detailView', 'checkoutView', 'loadingView', 'errorView', 'loginView', 'userPanelView', 'adminView', 'adminLoginView', 'categoryView', 'contactView'];
+  const views = ['homeView', 'detailView', 'checkoutView', 'loadingView', 'errorView', 'loginView', 'userPanelView', 'adminView', 'adminLoginView', 'categoryView', 'contactView', 'blogDetailView'];
   views.forEach(v => {
     const el = document.getElementById(v);
     if (el) el.style.display = 'none';
@@ -3031,6 +3031,7 @@ async function initApp() {
   renderCategoriesCarousel();
   loadBannerSlides();
   loadSplitBanners();
+  loadBlogs();
   initCarousel();
   initMobileMenu();
   initSearch();
@@ -3111,6 +3112,7 @@ function showAdminSection(section, el) {
   else if (section === 'orders') loadAdminOrders();
   else if (section === 'users') loadAdminUsers();
   else if (section === 'reviews') loadAdminReviews();
+  else if (section === 'blogs') loadAdminBlogs();
 }
 
 async function loadAdminDashboard() {
@@ -3938,3 +3940,229 @@ async function deleteSplitBanner(id) {
 })();
 
 document.addEventListener('DOMContentLoaded', initApp);
+
+// ========== BLOGS ==========
+let allBlogs = [];
+
+async function loadBlogs() {
+  const data = await apiGet('/blogs');
+  if (!data) return;
+  allBlogs = data;
+  renderBlogGrid(data);
+}
+
+function renderBlogGrid(blogs) {
+  const grid = document.getElementById('blogGrid');
+  if (!grid) return;
+  if (!blogs || blogs.length === 0) {
+    grid.innerHTML = '<p style="text-align:center;color:#999;padding:40px">No hay publicaciones de blog todavía.</p>';
+    return;
+  }
+  grid.innerHTML = blogs.map(b => `
+    <div class="blog-card" onclick="openBlogDetail(${b.id})">
+      <div class="blog-card-img">
+        <img src="${b.image || 'https://placehold.co/800x500?text=Blog'}" alt="${escapeHtml(b.title)}" loading="lazy">
+      </div>
+      <div class="blog-card-body">
+        <span class="blog-card-author"><i class="fas fa-user"></i> ${escapeHtml(b.author || 'Admin')}</span>
+        <h3 class="blog-card-title">${escapeHtml(b.title)}</h3>
+        <p class="blog-card-excerpt">${escapeHtml(b.excerpt || '')}</p>
+        <button class="blog-card-btn" onclick="event.stopPropagation(); openBlogDetail(${b.id})">Leer más</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function openBlogDetail(id) {
+  const blog = allBlogs.find(b => b.id === id);
+  if (!blog) {
+    apiGet('/blogs/' + id).then(b => {
+      if (b) renderBlogDetail(b);
+    });
+    return;
+  }
+  renderBlogDetail(blog);
+}
+
+function renderBlogDetail(blog) {
+  const container = document.getElementById('blogDetailContent');
+  if (!container) return;
+  const shareUrl = encodeURIComponent(window.location.origin + '/blog/' + blog.id);
+  const shareText = encodeURIComponent(blog.title);
+
+  container.innerHTML = `
+    <a href="#" class="blog-detail-back" onclick="event.preventDefault(); goHome()"><i class="fas fa-arrow-left"></i> Volver al inicio</a>
+    <div class="blog-detail-hero">
+      <img src="${blog.image || 'https://placehold.co/1200x600?text=Blog'}" alt="${escapeHtml(blog.title)}">
+    </div>
+    <div class="blog-detail-meta">
+      <span><i class="fas fa-user"></i> ${escapeHtml(blog.author || 'Admin')}</span>
+      <span><i class="fas fa-calendar"></i> ${new Date(blog.created_at).toLocaleDateString('es-ES', { year:'numeric', month:'long', day:'numeric' })}</span>
+    </div>
+    <h1 class="blog-detail-title">${escapeHtml(blog.title)}</h1>
+    <div class="blog-detail-content">${blog.content ? blog.content.replace(/\n/g, '<br>') : ''}</div>
+    <div class="blog-detail-share">
+      <span>Compartir:</span>
+      <a href="https://www.facebook.com/sharer/sharer.php?u=${shareUrl}" target="_blank" rel="noopener"><i class="fab fa-facebook-f"></i></a>
+      <a href="https://twitter.com/intent/tweet?text=${shareText}&url=${shareUrl}" target="_blank" rel="noopener"><i class="fab fa-twitter"></i></a>
+      <a href="https://pinterest.com/pin/create/button/?url=${shareUrl}&description=${shareText}" target="_blank" rel="noopener"><i class="fab fa-pinterest"></i></a>
+      <a href="https://www.instagram.com/" target="_blank" rel="noopener"><i class="fab fa-instagram"></i></a>
+      <a href="https://wa.me/?text=${shareText}%20${shareUrl}" target="_blank" rel="noopener"><i class="fab fa-whatsapp"></i></a>
+    </div>
+    <div class="blog-comments-section">
+      <h3>Opiniones</h3>
+      <div id="blogCommentsContainer">Cargando...</div>
+      <div class="blog-comment-form">
+        <h4>Dejar una opinión</h4>
+        <input type="text" id="blogCommentName" placeholder="Tu nombre *" class="blog-comment-input">
+        <textarea id="blogCommentText" rows="3" placeholder="Tu comentario *" class="blog-comment-textarea"></textarea>
+        <button class="blog-comment-submit" onclick="submitBlogComment(${blog.id})">Enviar opinión</button>
+      </div>
+    </div>
+  `;
+  showView('blogDetail');
+  loadBlogComments(blog.id);
+}
+
+async function loadBlogComments(blogId) {
+  const container = document.getElementById('blogCommentsContainer');
+  if (!container) return;
+  const data = await apiGet('/blogs/' + blogId + '/comments');
+  if (!data || data.length === 0) {
+    container.innerHTML = '<p class="blog-comments-empty">No hay opiniones todavía. Sé el primero en opinar.</p>';
+    return;
+  }
+  container.innerHTML = data.map(c => `
+    <div class="blog-comment-item">
+      <div class="blog-comment-header">
+        <strong>${escapeHtml(c.user_name)}</strong>
+        <span>${new Date(c.created_at).toLocaleDateString('es-ES')}</span>
+      </div>
+      <p>${escapeHtml(c.comment)}</p>
+    </div>
+  `).join('');
+}
+
+async function submitBlogComment(blogId) {
+  const name = document.getElementById('blogCommentName').value.trim();
+  const comment = document.getElementById('blogCommentText').value.trim();
+  if (!name || !comment) { alert('Nombre y comentario son requeridos'); return; }
+  const result = await apiPost('/blogs/' + blogId + '/comments', { user_name: name, comment });
+  if (result && !result.error) {
+    document.getElementById('blogCommentName').value = '';
+    document.getElementById('blogCommentText').value = '';
+    loadBlogComments(blogId);
+  }
+}
+
+// ========== BLOG ADMIN ==========
+let blogImageData = null;
+
+async function loadAdminBlogs() {
+  const data = await apiGet('/blogs/all');
+  if (!data) return;
+  const tbody = document.getElementById('adminBlogsTable');
+  if (!tbody) return;
+  tbody.innerHTML = data.map(b => `
+    <tr>
+      <td>${b.id}</td>
+      <td><img src="${b.image || ''}" style="width:60px;height:40px;object-fit:cover;border-radius:4px"></td>
+      <td>${escapeHtml(b.title)}</td>
+      <td>${escapeHtml(b.author || '-')}</td>
+      <td>${b.active ? '<span style="color:#27ae60">Sí</span>' : '<span style="color:#e74c3c">No</span>'}</td>
+      <td>${new Date(b.created_at).toLocaleDateString('es-ES')}</td>
+      <td>
+        <button class="admin-action-btn edit" onclick='editBlog(${JSON.stringify(b).replace(/'/g, "&#39;")})'><i class="fas fa-edit"></i></button>
+        <button class="admin-action-btn delete" onclick="deleteBlog(${b.id})"><i class="fas fa-trash"></i></button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function showBlogModal(blog) {
+  document.getElementById('blogId').value = '';
+  document.getElementById('blogTitle').value = '';
+  document.getElementById('blogExcerpt').value = '';
+  document.getElementById('blogContent').value = '';
+  document.getElementById('blogAuthor').value = '';
+  document.getElementById('blogActive').value = 'true';
+  document.getElementById('blogModalTitle').textContent = 'Agregar Blog';
+  blogImageData = null;
+  document.getElementById('blogImagePreview').style.display = 'none';
+  document.getElementById('blogImagePlaceholder').style.display = 'block';
+  document.getElementById('blogModal').style.display = 'flex';
+}
+
+function editBlog(blog) {
+  document.getElementById('blogId').value = blog.id;
+  document.getElementById('blogTitle').value = blog.title || '';
+  document.getElementById('blogExcerpt').value = blog.excerpt || '';
+  document.getElementById('blogContent').value = blog.content || '';
+  document.getElementById('blogAuthor').value = blog.author || '';
+  document.getElementById('blogActive').value = blog.active ? 'true' : 'false';
+  document.getElementById('blogModalTitle').textContent = 'Editar Blog';
+  if (blog.image) {
+    blogImageData = blog.image;
+    document.getElementById('blogImagePreview').src = blog.image;
+    document.getElementById('blogImagePreview').style.display = 'block';
+    document.getElementById('blogImagePlaceholder').style.display = 'none';
+  } else {
+    blogImageData = null;
+    document.getElementById('blogImagePreview').style.display = 'none';
+    document.getElementById('blogImagePlaceholder').style.display = 'block';
+  }
+  document.getElementById('blogModal').style.display = 'flex';
+}
+
+function closeBlogModal() {
+  document.getElementById('blogModal').style.display = 'none';
+}
+
+function previewBlogImage(event) {
+  const file = event.target.files[0];
+  if (file) {
+    blogImageData = file;
+    const url = URL.createObjectURL(file);
+    document.getElementById('blogImagePreview').src = url;
+    document.getElementById('blogImagePreview').style.display = 'block';
+    document.getElementById('blogImagePlaceholder').style.display = 'none';
+  }
+}
+
+async function saveBlog() {
+  const id = document.getElementById('blogId').value;
+  const title = document.getElementById('blogTitle').value.trim();
+  const excerpt = document.getElementById('blogExcerpt').value.trim();
+  const content = document.getElementById('blogContent').value.trim();
+  const author = document.getElementById('blogAuthor').value.trim();
+  const active = document.getElementById('blogActive').value === 'true';
+
+  if (!title) { alert('El título es requerido'); return; }
+
+  let image = '';
+  if (blogImageData && blogImageData instanceof File) {
+    const fd = new FormData();
+    fd.append('file', blogImageData);
+    const res = await fetch('/api/upload', { method: 'POST', body: fd });
+    const data = await res.json();
+    image = data.url;
+  } else if (typeof blogImageData === 'string') {
+    image = blogImageData;
+  }
+
+  const payload = { title, excerpt, content, image, author, active };
+
+  if (id) {
+    await apiPut('/blogs/' + id, payload);
+  } else {
+    await apiPost('/blogs', payload);
+  }
+  closeBlogModal();
+  loadAdminBlogs();
+}
+
+async function deleteBlog(id) {
+  if (!confirm('¿Eliminar este blog?')) return;
+  await apiDelete('/blogs/' + id);
+  loadAdminBlogs();
+}

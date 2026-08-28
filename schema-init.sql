@@ -96,6 +96,33 @@ CREATE TABLE IF NOT EXISTS users (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Blogs table
+CREATE TABLE IF NOT EXISTS blogs (
+  id SERIAL PRIMARY KEY,
+  title VARCHAR(255) NOT NULL,
+  excerpt TEXT DEFAULT '',
+  content TEXT DEFAULT '',
+  image TEXT,
+  author VARCHAR(255) DEFAULT 'Admin',
+  active BOOLEAN DEFAULT true,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Blog comments
+CREATE TABLE IF NOT EXISTS blog_comments (
+  id SERIAL PRIMARY KEY,
+  blog_id INTEGER REFERENCES blogs(id) ON DELETE CASCADE,
+  user_name VARCHAR(255) NOT NULL,
+  comment TEXT DEFAULT '',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Insert sample blogs
+INSERT INTO blogs (title, excerpt, content, image, author) VALUES
+('Tendencias de moda para esta temporada', 'Descubre las prendas imperdibles que no pueden faltar en tu guardarropa este año.', 'La moda evoluciona constantemente y esta temporada trae consigo tendencias que mezclan comodidad con estilo. Desde colores vibrantes hasta siluetas relajadas, las prendas clave incluyen blusas oversized, faldas midi plisadas y accesorios llamativos. No olvides combinar texturas y tonos neutros para crear looks versátiles y elegantes.', 'https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=800&h=500&fit=crop', 'María García'),
+('Cómo combinar colores como una experta', 'Aprende las reglas básicas del color y rompe las convenciones con confianza.', 'Combinar colores no tiene por qué ser complicado. La regla de los tres colores es un excelente punto de partida: elige un color dominante, uno secundario y un acento. Los tonos neutros como blanco, negro y beige son perfectos para equilibrar piezas llamativas. Recuerda que la confianza es el mejor accesorio que puedes llevar.', 'https://images.unsplash.com/photo-1558171813-4c088753af8f?w=800&h=500&fit=crop', 'Laura Martínez'),
+('Cuidado de tus prendas: consejos para que duren más', 'Extiende la vida útil de tu ropa favorita con estos tips prácticos y sencillos.', 'Invertir en prendas de calidad es solo el primer paso. Para que duren más, lava la ropa del revés, usa agua fría siempre que puedas y evita la secadora. Cuelga las camisetas en lugar de doblarlas y guarda los suéteres en espacios ventilados. Pequeños hábitos marcan una gran diferencia en la conservación de tu guardarropa.', 'https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=800&h=500&fit=crop', 'Carlos Ruiz');
+
 -- Insert sample products
 INSERT INTO products (name, price, original_price, discount, rating, reviews, category, image, description) VALUES
 ('Blusa para dama color gris', 1799.99, 2499.99, 28, 4.8, 124, 'Blusas', 'https://images.unsplash.com/photo-1564257631407-4deb1f99d992?w=600&h=750&fit=crop', 'Blusa elegante para dama en color gris.'),
