@@ -15,6 +15,7 @@ CREATE TABLE IF NOT EXISTS products (
   images TEXT,
   description TEXT,
   characteristics TEXT DEFAULT '',
+  meli_url TEXT DEFAULT '',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

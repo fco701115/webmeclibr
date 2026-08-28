@@ -478,7 +478,7 @@ function productCardHtml(p) {
           <button class="product-action-btn ${isInWishlist(p.id) ? 'wishlist-active' : ''}" data-tooltip="Favoritos" onclick="event.stopPropagation(); toggleWishlistBtn(this, ${p.id})"><i class="${isInWishlist(p.id) ? 'fas' : 'far'} fa-heart"></i></button>
           <button class="product-action-btn" data-tooltip="Comparar" onclick="event.stopPropagation(); addToCompare(${p.id}); openCompareModal()"><i class="fas fa-arrows-rotate"></i></button>
         </div>
-        <button class="product-buy-btn" onclick="event.stopPropagation(); addToCart(${p.id})"><i class="fas fa-shopping-cart"></i><span class="buy-btn-text">Agregar al carrito</span></button>
+        <button class="product-buy-btn" onclick="event.stopPropagation(); addToCart(${p.id})" style="${p.meli_url ? 'background:#FFE600;color:#2D3277;' : ''}"><i class="fas fa-shopping-cart"></i><span class="buy-btn-text">${p.meli_url ? 'Comprar en ML' : 'Agregar al carrito'}</span></button>
       </div>
       <div class="product-info">
         <div class="product-info-content">
@@ -642,6 +642,12 @@ function closeFilterDropdown(e) {
 function addToCart(id) {
   const product = products.find(p => p.id === id);
   if (!product) return;
+
+  // If product has a Mercado Libre URL, redirect there instead
+  if (product.meli_url) {
+    window.open(product.meli_url, '_blank');
+    return;
+  }
 
   const existing = cart.find(item => item.id === id);
   if (existing) {
@@ -1164,9 +1170,12 @@ function showDetail(id) {
         </div>
 
         <div class="detail-actions">
-          <button class="detail-add-cart" onclick="addToCart(${product.id})">Agregar al carrito</button>
+          ${product.meli_url
+            ? `<a href="${product.meli_url}" target="_blank" class="detail-add-cart" style="background:#FFE600;color:#2D3277;text-decoration:none;display:block;text-align:center;"><i class="fas fa-shopping-cart"></i> Comprar en Mercado Libre</a>`
+            : `<button class="detail-add-cart" onclick="addToCart(${product.id})">Agregar al carrito</button>`
+          }
         </div>
-        <button class="detail-buy-now" onclick="addToCart(${product.id}); openCheckout(false)">Comprar ahora</button>
+        ${product.meli_url ? '' : `<button class="detail-buy-now" onclick="addToCart(${product.id}); openCheckout(false)">Comprar ahora</button>`}
 
         <div class="detail-links">
           <a href="#" id="detailWishlistLink" onclick="event.preventDefault(); toggleDetailWishlist(${product.id})"><i class="far fa-heart"></i> Agregar a favoritos</a>
@@ -3636,6 +3645,7 @@ async function editProduct(id) {
   document.getElementById('productColors').value = product.colors || '';
   document.getElementById('productDescription').value = product.description || '';
   document.getElementById('productCharacteristics').value = product.characteristics || '';
+  document.getElementById('meliUrl').value = product.meli_url || '';
   calcDiscount();
   
   const images = product.images || (product.image ? [product.image] : []);
@@ -3695,6 +3705,7 @@ async function saveProduct() {
   const colors = document.getElementById('productColors').value.trim();
   const description = document.getElementById('productDescription').value.trim();
   const characteristics = document.getElementById('productCharacteristics').value.trim();
+  const meli_url = document.getElementById('meliUrl').value.trim();
   
   const images = [];
   for (let i = 1; i <= 5; i++) {
@@ -3716,7 +3727,7 @@ async function saveProduct() {
     return;
   }
 
-  const data = { name, price, original_price, discount, stock, category, sizes, colors, images, description, characteristics };
+  const data = { name, price, original_price, discount, stock, category, sizes, colors, images, description, characteristics, meli_url };
   
   if (id) {
     await apiPut('/products/' + id, data);

@@ -17,6 +17,7 @@ CREATE TABLE IF NOT EXISTS products (
   images JSONB DEFAULT '[]',
   description TEXT,
   characteristics TEXT DEFAULT '',
+  meli_url TEXT DEFAULT '',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
