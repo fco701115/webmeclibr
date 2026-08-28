@@ -158,7 +158,7 @@ const pool = new Pool(
 const cache = {};
 const CACHE_TTL = 15000; // 15 seconds
 
-// Auto-migrate: add missing columns to orders table
+// Auto-migrate: add missing columns to orders and products tables
 async function autoMigrate() {
   try {
     // Check if orders table exists
@@ -184,6 +184,15 @@ async function autoMigrate() {
     await pool.query("ALTER TABLE orders ALTER COLUMN status SET DEFAULT 'Pendiente'");
     await pool.query("UPDATE orders SET status = 'Pendiente' WHERE status = 'pending'");
     console.log('Auto-migración de orders completada');
+
+    // Add characteristics column to products table if it doesn't exist
+    const prodTableCheck = await pool.query(
+      "SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'products')"
+    );
+    if (prodTableCheck.rows[0].exists) {
+      await pool.query("ALTER TABLE products ADD COLUMN IF NOT EXISTS characteristics TEXT DEFAULT ''");
+      console.log('Auto-migración de products completada');
+    }
   } catch (err) {
     console.error('Error en auto-migración:', err.message);
   }
@@ -368,16 +377,121 @@ app.delete('/api/categories/:id', async (req, res) => {
   }
 });
 
+// Mercado Libre affiliate product fetcher
+app.get('/api/fetch-meli', async (req, res) => {
+  try {
+    const { url } = req.query;
+    if (!url) return res.status(400).json({ error: 'URL requerida' });
+
+    let itemId = null;
+
+    if (url.includes('meli.la') || url.includes('mercadolibre')) {
+      const redirectRes = await fetch(url, { redirect: 'follow', headers: { 'User-Agent': 'Mozilla/5.0' } });
+      const finalUrl = redirectRes.url;
+      const match = finalUrl.match(/(ML[A-Z]+-\d+)/);
+      if (match) itemId = match[1];
+    }
+
+    const idMatch = url.match(/(ML[A-Z]+-\d+)/);
+    if (!itemId && idMatch) itemId = idMatch[1];
+
+    if (!itemId) return res.status(400).json({ error: 'No se pudo extraer el ID del producto de la URL' });
+
+    const itemRes = await fetch(`https://api.mercadolibre.com/items/${itemId}`, {
+      headers: { 'User-Agent': 'Mozilla/5.0' }
+    });
+    if (!itemRes.ok) return res.status(404).json({ error: 'Producto no encontrado en Mercado Libre' });
+    const item = await itemRes.json();
+
+    let description = '';
+    try {
+      const descRes = await fetch(`https://api.mercadolibre.com/items/${itemId}/description`, {
+        headers: { 'User-Agent': 'Mozilla/5.0' }
+      });
+      if (descRes.ok) {
+        const descData = await descRes.json();
+        description = descData.plain_text || '';
+      }
+    } catch (_) {}
+
+    const originalPrice = item.original_price || item.price;
+    const currentPrice = item.price;
+    const discount = (originalPrice && originalPrice > currentPrice)
+      ? Math.round((1 - currentPrice / originalPrice) * 100)
+      : 0;
+
+    const colors = [];
+    const sizes = [];
+    if (item.attributes) {
+      for (const attr of item.attributes) {
+        const id = attr.id || '';
+        const val = attr.value_name || '';
+        if (!val) continue;
+        if (id === 'COLOR' || id === 'MAIN_COLOR') {
+          colors.push(val);
+        }
+        if (id === 'SIZE' || id === 'SIZES') {
+          sizes.push(val);
+        }
+      }
+    }
+
+    if (item.variations) {
+      for (const v of item.variations) {
+        if (v.attributes) {
+          for (const attr of v.attributes) {
+            const id = attr.id || '';
+            const val = attr.value_name || '';
+            if (!val) continue;
+            if ((id === 'COLOR' || id === 'MAIN_COLOR') && !colors.includes(val)) colors.push(val);
+            if ((id === 'SIZE' || id === 'SIZES') && !sizes.includes(val)) sizes.push(val);
+          }
+        }
+      }
+    }
+
+    const characteristics = [];
+    const skipAttrs = ['COLOR', 'MAIN_COLOR', 'SIZE', 'SIZES', 'BRAND', 'MODEL', 'ITEM_ID', 'PRODUCT_ID', 'PACKAGE_LENGTH', 'PACKAGE_WIDTH', 'PACKAGE_HEIGHT', 'PACKAGE_WEIGHT', 'UNITS_PER_WATCH', 'WEARABLE_TECHNOLOGY'];
+    if (item.attributes) {
+      for (const attr of item.attributes) {
+        if (attr.value_name && !skipAttrs.includes(attr.id)) {
+          const label = attr.name || attr.id;
+          characteristics.push(`${label}: ${attr.value_name}`);
+        }
+      }
+    }
+
+    const images = (item.pictures || []).slice(0, 5).map(p => p.url || p.secure_url);
+
+    res.json({
+      name: item.title || '',
+      price: currentPrice,
+      original_price: originalPrice,
+      discount,
+      colors: colors.join(', '),
+      sizes: sizes.join(', '),
+      description,
+      images,
+      characteristics,
+      category: item.category_id || '',
+      itemId
+    });
+  } catch (err) {
+    console.error('Error fetching ML product:', err);
+    res.status(500).json({ error: 'Error al obtener datos de Mercado Libre' });
+  }
+});
+
 // POST create product
 app.post('/api/products', async (req, res) => {
   try {
-    const { name, price, original_price, discount, stock, category, sizes, colors, images, description } = req.body;
+    const { name, price, original_price, discount, stock, category, sizes, colors, images, description, characteristics } = req.body;
     const imagesJson = JSON.stringify(images || []);
     const firstImage = (images && images.length > 0) ? images[0] : null;
     const result = await pool.query(
-      `INSERT INTO products (name, price, original_price, discount, stock, category, sizes, colors, image, images, description)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *`,
-      [name, price, original_price, discount, stock || 0, category, sizes || '', colors || '', firstImage, imagesJson, description]
+      `INSERT INTO products (name, price, original_price, discount, stock, category, sizes, colors, image, images, description, characteristics)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING *`,
+      [name, price, original_price, discount, stock || 0, category, sizes || '', colors || '', firstImage, imagesJson, description, characteristics || '']
     );
     res.status(201).json(result.rows[0]);
   } catch (err) {
@@ -390,13 +504,13 @@ app.post('/api/products', async (req, res) => {
 app.put('/api/products/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, price, original_price, discount, stock, category, sizes, colors, images, description } = req.body;
+    const { name, price, original_price, discount, stock, category, sizes, colors, images, description, characteristics } = req.body;
     const imagesJson = JSON.stringify(images || []);
     const firstImage = (images && images.length > 0) ? images[0] : null;
     const result = await pool.query(
-      `UPDATE products SET name=$1, price=$2, original_price=$3, discount=$4, stock=$5, category=$6, sizes=$7, colors=$8, image=$9, images=$10, description=$11
-       WHERE id=$12 RETURNING *`,
-      [name, price, original_price, discount, stock || 0, category, sizes || '', colors || '', firstImage, imagesJson, description, id]
+      `UPDATE products SET name=$1, price=$2, original_price=$3, discount=$4, stock=$5, category=$6, sizes=$7, colors=$8, image=$9, images=$10, description=$11, characteristics=$12
+       WHERE id=$13 RETURNING *`,
+      [name, price, original_price, discount, stock || 0, category, sizes || '', colors || '', firstImage, imagesJson, description, characteristics || '', id]
     );
     if (result.rows.length === 0) {
       return res.status(404).json({ error: 'Producto no encontrado' });

@@ -7102,3 +7102,25 @@ button {
     grid-template-columns: repeat(3, 1fr);
   }
 }
+
+/* Mercado Libre affiliate URL input */
+#meliUrl {
+  transition: border-color 0.2s;
+}
+#meliUrl:focus {
+  border-color: #27ae60;
+  outline: none;
+}
+#meliFetchBtn:hover {
+  background: #219a52;
+}
+#meliFetchBtn:disabled {
+  background: #999;
+  cursor: not-allowed;
+}
+
+/* Characteristics textarea */
+#productCharacteristics {
+  font-size: 0.85rem;
+  line-height: 1.5;
+}

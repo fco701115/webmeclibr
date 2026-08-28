@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS products (
   image TEXT,
   images TEXT,
   description TEXT,
+  characteristics TEXT DEFAULT '',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

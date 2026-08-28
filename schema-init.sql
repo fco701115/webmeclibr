@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS products (
   image TEXT,
   images JSONB DEFAULT '[]',
   description TEXT,
+  characteristics TEXT DEFAULT '',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

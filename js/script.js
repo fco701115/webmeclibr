@@ -3393,6 +3393,7 @@ async function loadAdminProducts() {
 function showAddProductModal() {
   document.getElementById('productModalTitle').textContent = 'Agregar Producto';
   document.getElementById('productId').value = '';
+  document.getElementById('meliUrl').value = '';
   document.getElementById('productName').value = '';
   document.getElementById('productPrice').value = '';
   document.getElementById('productOriginalPrice').value = '';
@@ -3401,6 +3402,7 @@ function showAddProductModal() {
   document.getElementById('productSizes').value = '';
   document.getElementById('productColors').value = '';
   document.getElementById('productDescription').value = '';
+  document.getElementById('productCharacteristics').value = '';
   
   for (let i = 1; i <= 5; i++) {
     productImages[i] = null;
@@ -3424,6 +3426,51 @@ function calcDiscount() {
   }
 }
 
+async function fetchMeliProduct() {
+  const url = document.getElementById('meliUrl').value.trim();
+  if (!url) { alert('Pega una URL de Mercado Libre'); return; }
+
+  const btn = document.getElementById('meliFetchBtn');
+  const originalText = btn.innerHTML;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Cargando...';
+  btn.disabled = true;
+
+  try {
+    const res = await fetch('/api/fetch-meli?url=' + encodeURIComponent(url));
+    const data = await res.json();
+    if (!res.ok) { alert(data.error || 'Error al obtener datos'); return; }
+
+    if (data.name) document.getElementById('productName').value = data.name;
+    if (data.price) document.getElementById('productPrice').value = data.price;
+    if (data.original_price) document.getElementById('productOriginalPrice').value = data.original_price;
+    if (data.discount) document.getElementById('productDiscount').value = data.discount;
+    if (data.sizes) document.getElementById('productSizes').value = data.sizes;
+    if (data.colors) document.getElementById('productColors').value = data.colors;
+    if (data.description) document.getElementById('productDescription').value = data.description;
+    if (data.characteristics && data.characteristics.length > 0) {
+      document.getElementById('productCharacteristics').value = data.characteristics.join('\n');
+    }
+
+    if (data.images && data.images.length > 0) {
+      for (let i = 0; i < 5; i++) {
+        if (data.images[i]) {
+          productImages[i + 1] = data.images[i];
+          document.getElementById('productImagePreview' + (i + 1)).src = data.images[i];
+          document.getElementById('productImagePreview' + (i + 1)).style.display = 'block';
+          document.getElementById('productImagePlaceholder' + (i + 1)).style.display = 'none';
+        }
+      }
+    }
+
+    alert('Datos cargados correctamente. Revisa los campos y selecciona la categoría.');
+  } catch (err) {
+    alert('Error de conexión: ' + err.message);
+  } finally {
+    btn.innerHTML = originalText;
+    btn.disabled = false;
+  }
+}
+
 async function editProduct(id) {
   const product = await apiGet('/products/' + id);
   if (!product) return;
@@ -3438,6 +3485,7 @@ async function editProduct(id) {
   document.getElementById('productSizes').value = product.sizes || '';
   document.getElementById('productColors').value = product.colors || '';
   document.getElementById('productDescription').value = product.description || '';
+  document.getElementById('productCharacteristics').value = product.characteristics || '';
   calcDiscount();
   
   const images = product.images || (product.image ? [product.image] : []);
@@ -3496,6 +3544,7 @@ async function saveProduct() {
   const sizes = document.getElementById('productSizes').value.trim();
   const colors = document.getElementById('productColors').value.trim();
   const description = document.getElementById('productDescription').value.trim();
+  const characteristics = document.getElementById('productCharacteristics').value.trim();
   
   const images = [];
   for (let i = 1; i <= 5; i++) {
@@ -3517,7 +3566,7 @@ async function saveProduct() {
     return;
   }
 
-  const data = { name, price, original_price, discount, stock, category, sizes, colors, images, description };
+  const data = { name, price, original_price, discount, stock, category, sizes, colors, images, description, characteristics };
   
   if (id) {
     await apiPut('/products/' + id, data);
