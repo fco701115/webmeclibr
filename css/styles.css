@@ -283,6 +283,7 @@ button {
   justify-content: center;
   align-items: center;
   gap: 0;
+  background: #ffc000;
   height: 60px;
 }
 
