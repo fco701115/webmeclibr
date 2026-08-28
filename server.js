@@ -410,13 +410,27 @@ app.get('/api/fetch-meli', async (req, res) => {
     }
 
     if (!itemId && !catalogId) {
-      // Check if it's a profile/search page and try to find first product link
-      const productLinkMatch = finalUrl.match(/mercadolibre\.com\.mx\/[^/]+\/p\/(ML[A-Z]+\d+)/);
-      if (productLinkMatch) {
-        catalogId = productLinkMatch[1];
-      } else {
-        return res.status(400).json({ error: 'No se encontró un producto válido en la URL. Asegúrate de pegar la URL de un producto específico (no de perfil o búsqueda).' });
-      }
+      // Try to find product links from the page HTML (profile/search pages)
+      try {
+        const pageRes = await fetch(finalUrl, { headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' } });
+        const html = await pageRes.text();
+        // Look for catalog product links: /p/MLM12345678
+        const catalogLinks = html.match(/\/p\/(ML[A-Z]+\d+)/g);
+        if (catalogLinks && catalogLinks.length > 0) {
+          const firstCatalogId = catalogLinks[0].match(/ML[A-Z]+\d+/)[0];
+          catalogId = firstCatalogId;
+        } else {
+          // Look for direct item links: /MLM-123456789
+          const itemLinks = html.match(/(ML[A-Z]+-\d+)/g);
+          if (itemLinks && itemLinks.length > 0) {
+            itemId = itemLinks[0];
+          }
+        }
+      } catch (_) {}
+    }
+
+    if (!itemId && !catalogId) {
+      return res.status(400).json({ error: 'No se encontró un producto válido en la URL. Asegúrate de pegar la URL de un producto específico (no de perfil o búsqueda).' });
     }
 
     let item = null;
