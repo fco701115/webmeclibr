@@ -1018,6 +1018,14 @@ button {
   transition: opacity 200ms ease, transform 200ms ease;
 }
 
+.product-buy-btn .buy-ml-icon {
+  display: none;
+}
+
+.product-buy-btn .buy-fa-icon {
+  display: inline;
+}
+
 /* Product info area */
 .product-info {
   width: 100%;
@@ -3291,6 +3299,17 @@ button {
   }
 
   .product-buy-btn .buy-btn-text {
+    display: none;
+  }
+
+  .product-buy-btn .buy-ml-icon {
+    display: block;
+    width: 22px;
+    height: 22px;
+    object-fit: contain;
+  }
+
+  .product-buy-btn .buy-fa-icon {
     display: none;
   }
 
