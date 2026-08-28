@@ -385,100 +385,127 @@ app.get('/api/fetch-meli', async (req, res) => {
 
     let itemId = null;
     let catalogId = null;
-    let finalUrl = url;
 
-    // Follow redirects to get the final URL
-    try {
-      const redirectRes = await fetch(url, { redirect: 'follow', headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' } });
-      finalUrl = redirectRes.url;
-    } catch (_) {}
+    // Extract item/catalog ID from URL
+    const itemIdMatch = url.match(/(ML[A-Z]+-\d+)/);
+    const catalogMatch = url.match(/\/p\/(ML[A-Z]+\d+)/);
+    const upMatch = url.match(/\/up\/(ML[A-Z]+\d+)/);
+    const filterItemId = url.match(/item_id[:=](ML[A-Z]+-\d+)/);
 
-    // Extract item ID from URL patterns: MLM-123456789 or MLM12345678 (catalog)
-    const itemIdMatch = finalUrl.match(/(ML[A-Z]+-\d+)/);
-    const catalogMatch = finalUrl.match(/\/p\/(ML[A-Z]+\d+)/);
-
-    if (itemIdMatch) {
-      itemId = itemIdMatch[1];
-    } else if (catalogMatch) {
-      catalogId = catalogMatch[1];
-    } else {
-      // Try extracting from original URL
-      const origItemMatch = url.match(/(ML[A-Z]+-\d+)/);
-      const origCatalogMatch = url.match(/\/p\/(ML[A-Z]+\d+)/);
-      if (origItemMatch) itemId = origItemMatch[1];
-      else if (origCatalogMatch) catalogId = origCatalogMatch[1];
-    }
+    if (itemIdMatch) itemId = itemIdMatch[1];
+    else if (filterItemId) itemId = filterItemId[1];
+    else if (catalogMatch) catalogId = catalogMatch[1];
+    else if (upMatch) itemId = upMatch[1];
 
     if (!itemId && !catalogId) {
-      // Try to find product links from the page HTML (profile/search pages)
+      return res.status(400).json({ error: 'No se pudo extraer el ID del producto. Copia la URL de un producto en Mercado Libre.' });
+    }
+
+    // Try multiple API approaches
+    let item = null;
+
+    // 1. Try items API
+    if (itemId) {
       try {
-        const pageRes = await fetch(finalUrl, { headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' } });
-        const html = await pageRes.text();
-        // Look for catalog product links: /p/MLM12345678
-        const catalogLinks = html.match(/\/p\/(ML[A-Z]+\d+)/g);
-        if (catalogLinks && catalogLinks.length > 0) {
-          const firstCatalogId = catalogLinks[0].match(/ML[A-Z]+\d+/)[0];
-          catalogId = firstCatalogId;
-        } else {
-          // Look for direct item links: /MLM-123456789
-          const itemLinks = html.match(/(ML[A-Z]+-\d+)/g);
-          if (itemLinks && itemLinks.length > 0) {
-            itemId = itemLinks[0];
+        const itemRes = await fetch(`https://api.mercadolibre.com/items/${itemId}`, {
+          headers: { 'User-Agent': 'MercadoLibre-Store/1.0' }
+        });
+        if (itemRes.ok) item = await itemRes.json();
+      } catch (_) {}
+    }
+
+    // 2. Try catalog products API
+    if (!item && catalogId) {
+      try {
+        const prodRes = await fetch(`https://api.mercadolibre.com/products/${catalogId}`, {
+          headers: { 'User-Agent': 'MercadoLibre-Store/1.0' }
+        });
+        if (prodRes.ok) {
+          const catalog = await prodRes.json();
+          if (catalog.items && catalog.items.length > 0) {
+            const firstItemId = catalog.items[0].id;
+            const itemRes = await fetch(`https://api.mercadolibre.com/items/${firstItemId}`, {
+              headers: { 'User-Agent': 'MercadoLibre-Store/1.0' }
+            });
+            if (itemRes.ok) item = await itemRes.json();
+          }
+          if (!item && catalog.title) {
+            item = {
+              title: catalog.title,
+              price: catalog.price ? catalog.price.amount : 0,
+              original_price: catalog.original_price || null,
+              attributes: catalog.attributes || [],
+              pictures: catalog.pictures || [],
+              variations: catalog.variations || []
+            };
           }
         }
       } catch (_) {}
     }
 
-    if (!itemId && !catalogId) {
-      return res.status(400).json({ error: 'No se encontró un producto válido en la URL. Asegúrate de pegar la URL de un producto específico (no de perfil o búsqueda).' });
-    }
-
-    let item = null;
-
-    if (itemId) {
-      const itemRes = await fetch(`https://api.mercadolibre.com/items/${itemId}`, {
-        headers: { 'User-Agent': 'Mozilla/5.0' }
-      });
-      if (itemRes.ok) item = await itemRes.json();
-    }
-
-    if (!item && catalogId) {
-      // For catalog products, search by product ID
-      const searchRes = await fetch(`https://api.mercadolibre.com/products/${catalogId}`, {
-        headers: { 'User-Agent': 'Mozilla/5.0' }
-      });
-      if (searchRes.ok) {
-        const catalog = await searchRes.json();
-        // Get the first available item from the catalog
-        if (catalog.items && catalog.items.length > 0) {
-          const firstItem = catalog.items[0];
-          const itemRes = await fetch(`https://api.mercadolibre.com/items/${firstItem.id}`, {
-            headers: { 'User-Agent': 'Mozilla/5.0' }
-          });
-          if (itemRes.ok) item = await itemRes.json();
+    // 3. Try scraping the product page HTML as last resort
+    if (!item) {
+      try {
+        let productUrl = url;
+        if (itemId && !url.includes('articulo.mercadolibre')) {
+          productUrl = `https://articulo.mercadolibre.com.mx/${itemId}`;
         }
-        // Use catalog data if item not available
-        if (!item && catalog.title) {
-          item = {
-            title: catalog.title,
-            price: catalog.price ? catalog.price.amount : 0,
-            original_price: catalog.original_price || null,
-            attributes: catalog.attributes || [],
-            pictures: catalog.pictures || [],
-            variations: catalog.variations || []
-          };
+        const pageRes = await fetch(productUrl, {
+          redirect: 'follow',
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+            'Accept': 'text/html,application/xhtml+xml',
+            'Accept-Language': 'es-MX,es;q=0.9'
+          }
+        });
+        const html = await pageRes.text();
+
+        // Try to extract __PRELOADED_STATE__ or similar JSON data
+        const stateMatch = html.match(/window\.__PRELOADED_STATE__\s*=\s*(\{.*?\});/s);
+        if (stateMatch) {
+          try {
+            const state = JSON.parse(stateMatch[1]);
+            if (state.initialState) {
+              const ps = state.initialState;
+              item = {
+                title: ps.item?.title || '',
+                price: ps.item?.price?.amount || ps.item?.price || 0,
+                original_price: ps.item?.originalPrice || null,
+                attributes: ps.item?.attributes || [],
+                pictures: ps.item?.pictures || [],
+                variations: ps.item?.variations || []
+              };
+            }
+          } catch (_) {}
         }
-      }
+
+        // Fallback: parse HTML directly
+        if (!item) {
+          const titleMatch = html.match(/<h1[^>]*>([^<]+)<\/h1>/);
+          const priceMatch = html.match(/andes-money-amount__fraction[^>]*>([^<]+)</);
+          if (titleMatch && priceMatch) {
+            item = {
+              title: titleMatch[1].trim(),
+              price: parseFloat(priceMatch[1].replace(/,/g, '')),
+              original_price: null,
+              attributes: [],
+              pictures: [],
+              variations: []
+            };
+          }
+        }
+      } catch (_) {}
     }
 
-    if (!item) return res.status(404).json({ error: 'Producto no encontrado en Mercado Libre' });
+    if (!item) return res.status(404).json({ error: 'No se pudo obtener el producto. Verifica que la URL sea de Mercado Libre México.' });
 
+    // Extract description
     let description = '';
     try {
-      const itemIdForDesc = item.id || itemId;
-      if (itemIdForDesc) {
-        const descRes = await fetch(`https://api.mercadolibre.com/items/${itemIdForDesc}/description`, {
-          headers: { 'User-Agent': 'Mozilla/5.0' }
+      const descId = item.id || itemId;
+      if (descId) {
+        const descRes = await fetch(`https://api.mercadolibre.com/items/${descId}/description`, {
+          headers: { 'User-Agent': 'MercadoLibre-Store/1.0' }
         });
         if (descRes.ok) {
           const descData = await descRes.json();
@@ -520,7 +547,7 @@ app.get('/api/fetch-meli', async (req, res) => {
     }
 
     const characteristics = [];
-    const skipAttrs = ['COLOR', 'MAIN_COLOR', 'SIZE', 'SIZES', 'BRAND', 'MODEL', 'ITEM_ID', 'PRODUCT_ID', 'PACKAGE_LENGTH', 'PACKAGE_WIDTH', 'PACKAGE_HEIGHT', 'PACKAGE_WEIGHT', 'UNITS_PER_WATCH', 'WEARABLE_TECHNOLOGY'];
+    const skipAttrs = ['COLOR', 'MAIN_COLOR', 'SIZE', 'SIZES', 'BRAND', 'MODEL', 'ITEM_ID', 'PRODUCT_ID', 'PACKAGE_LENGTH', 'PACKAGE_WIDTH', 'PACKAGE_HEIGHT', 'PACKAGE_WEIGHT'];
     if (item.attributes) {
       for (const attr of item.attributes) {
         if (attr.value_name && !skipAttrs.includes(attr.id)) {
