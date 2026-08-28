@@ -3285,8 +3285,8 @@ button {
 
   .product-buy-btn {
     opacity: 1;
-    width: 35px;
-    height: 35px;
+    width: 40px;
+    height: 40px;
     position: absolute;
     bottom: 8px;
     right: 8px;
@@ -3296,6 +3296,7 @@ button {
     padding: 0;
     transform: none;
     font-size: 14px;
+    overflow: visible;
   }
 
   .product-buy-btn .buy-btn-text {
@@ -3304,9 +3305,10 @@ button {
 
   .product-buy-btn .buy-ml-icon {
     display: block;
-    width: 24px;
-    height: 24px;
+    width: 30px;
+    height: 30px;
     object-fit: contain;
+    border-radius: 50%;
   }
 
   .product-buy-btn .buy-fa-icon {
