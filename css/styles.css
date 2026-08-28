@@ -1759,7 +1759,7 @@ button {
 .detail-price-current {
   font-size: 1.4rem;
   font-weight: 700;
-  color: var(--text);
+  color: #ff0000;
 }
 
 .detail-price-original {
