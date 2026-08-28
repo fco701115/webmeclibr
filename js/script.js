@@ -2010,13 +2010,13 @@ function renderCheckoutSummary() {
 let checkoutFromCart = false;
 
 function openCheckout(openCart = true) {
-  if (cart.length === 0) {
-    if (openCart) toggleCart();
+  // If any product in cart has meli_url, redirect to first ML product
+  const mlItem = cart.find(item => item.meli_url);
+  if (mlItem) {
+    window.open(mlItem.meli_url, '_blank');
     return;
   }
-  checkoutFromCart = true;
-  showCheckout();
-  if (openCart) toggleCart();
+  alert('Lo sentimos, el checkout no está disponible. Los productos con enlace de Mercado Libre se compran directamente en ML.');
 }
 
 function updateCheckoutQty(id, delta) {
