@@ -131,7 +131,7 @@ button {
 
 .mobile-search-bar {
   display: none;
-  background: #f2cb2f;
+  background: #ffc000;
   color: #151414;
   padding: 12px 15px;
   align-items: center;
@@ -264,13 +264,13 @@ button {
   font-size: 1.4rem;
   padding: 8px;
   order: -1;
-  background: #f2cb2f;
+  background: #ffc000;
   border-radius: 6px;
 }
 
 /* ========== NAVBAR ========== */
 .navbar {
-  background: #f2cb2f;
+  background: #ffc000;
   color: #151414;
   border-top: 1px solid rgba(255, 255, 255, 0.15);
 }
@@ -321,7 +321,7 @@ button {
 .mobile-nav .nav-link {
   padding: 14px 20px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  background: #f2cb2f;
+  background: #ffc000;
   color: #151414;
 }
 
@@ -491,7 +491,7 @@ button {
 
 .banner-btn {
   display: inline-block;
-  background: #f2cb2f;
+  background: #ffc000;
   color: #151414;
   padding: 12px 30px;
   font-weight: 700;
@@ -555,7 +555,7 @@ button {
 
 .side-banner-btn {
   display: inline-block;
-  background: #f2cb2f;
+  background: #ffc000;
   color: #151414;
   padding: 8px 18px;
   border-radius: 6px;
@@ -617,7 +617,7 @@ button {
 
 .benefit-icon i {
   font-size: 1.3rem;
-  color: #f2cb2f;
+  color: #ffc000;
 }
 
 .benefit-text h3 {
@@ -692,7 +692,7 @@ button {
 }
 
 .category-card:hover .category-img-wrapper {
-  border-color: #f2cb2f;
+  border-color: #ffc000;
 }
 
 .category-img-wrapper img {
@@ -931,7 +931,7 @@ button {
 }
 
 .product-action-btn:hover {
-  background: #f2cb2f;
+  background: #ffc000;
   color: #151414;
 }
 
@@ -1000,7 +1000,7 @@ button {
   left: 0;
   width: 100%;
   height: 35px;
-  background: #f2cb2f;
+  background: #ffc000;
   color: #151414;
   border: none;
   border-radius: 0 0 0 0;
@@ -1086,7 +1086,7 @@ button {
 .price-current {
   font-size: 1rem;
   font-weight: 700;
-  color: #f2cb2f;
+  color: #ffc000;
 }
 
 .price-original {
@@ -1255,7 +1255,7 @@ button {
 .cart-item-price {
   font-size: 0.85rem;
   font-weight: 700;
-  color: #f2cb2f;
+  color: #ffc000;
 }
 
 .cart-item-qty {
@@ -1359,7 +1359,7 @@ button {
   align-items: center;
   padding: 16px 20px;
   border-bottom: 1px solid #eee;
-  background: #f2cb2f;
+  background: #ffc000;
   color: #151414;
 }
 
@@ -1423,7 +1423,7 @@ button {
 
 .wishlist-item-price {
   font-size: 0.9rem;
-  color: #f2cb2f;
+  color: #ffc000;
   font-weight: 700;
 }
 
@@ -1594,7 +1594,7 @@ button {
 .checkout-btn {
   width: 100%;
   padding: 12px;
-  background: #f2cb2f;
+  background: #ffc000;
   color: #151414;
   border: none;
   border-radius: var(--radius);
@@ -1915,7 +1915,7 @@ button {
 .detail-add-cart {
   width: 100%;
   padding: 12px;
-  background: #f2cb2f;
+  background: #ffc000;
   color: #151414;
   border: none;
   border-radius: var(--radius);
@@ -1991,7 +1991,7 @@ button {
 
 .detail-share a:hover,
 .detail-share a.active {
-  background: #f2cb2f;
+  background: #ffc000;
   color: #151414;
 }
 
@@ -2012,7 +2012,7 @@ button {
 }
 
 .info-item i {
-  color: #f2cb2f;
+  color: #ffc000;
   width: 16px;
   text-align: center;
 }
@@ -2047,8 +2047,8 @@ button {
 }
 
 .tab-btn.active {
-  color: #f2cb2f;
-  border-bottom-color: #f2cb2f;
+  color: #ffc000;
+  border-bottom-color: #ffc000;
 }
 
 .tab-content {
@@ -2421,9 +2421,9 @@ button {
   margin: 0 0 16px 0;
   padding: 12px 16px;
   background: #eaf5fa;
-  border: 1px solid #f2cb2f;
+  border: 1px solid #ffc000;
   border-radius: var(--radius);
-  color: #f2cb2f;
+  color: #ffc000;
   font-size: 0.9rem;
   font-weight: 600;
   text-align: center;
@@ -2432,7 +2432,7 @@ button {
 .checkout-step-save {
   align-self: flex-start;
   padding: 10px 20px;
-  background: #f2cb2f;
+  background: #ffc000;
   color: #151414;
   border: none;
   border-radius: var(--radius);
@@ -2459,7 +2459,7 @@ button {
   justify-content: center;
   gap: 6px;
   padding: 10px 20px;
-  background: #f2cb2f;
+  background: #ffc000;
   color: #fff;
   border: none;
   border-radius: var(--radius);
@@ -2480,7 +2480,7 @@ button {
   justify-content: space-between;
   padding: 20px;
   background: #fff;
-  border: 1px solid #f2cb2f;
+  border: 1px solid #ffc000;
   border-radius: var(--radius);
 }
 
@@ -2592,13 +2592,13 @@ button {
 }
 
 .checkout-payment-option:has(input:checked) {
-  border-color: #f2cb2f;
-  border-bottom-color: #f2cb2f;
+  border-color: #ffc000;
+  border-bottom-color: #ffc000;
   z-index: 1;
 }
 
 .checkout-payment-option input[type="radio"] {
-  accent-color: #f2cb2f;
+  accent-color: #ffc000;
 }
 
 .checkout-payment-label {
@@ -2671,7 +2671,7 @@ button {
 }
 
 .checkout-checkbox-row input[type="checkbox"] {
-  accent-color: #f2cb2f;
+  accent-color: #ffc000;
 }
 
 .checkout-transfer-info {
@@ -2775,7 +2775,7 @@ button {
   letter-spacing: 0.5px;
   margin-bottom: 20px;
   padding-bottom: 14px;
-  border-bottom: 2px solid #f2cb2f;
+  border-bottom: 2px solid #ffc000;
 }
 
 .checkout-items {
@@ -2940,7 +2940,7 @@ button {
   width: 100%;
   margin-top: 20px;
   padding: 16px;
-  background: #f2cb2f;
+  background: #ffc000;
   color: #151414;
   border: none;
   border-radius: var(--radius);
@@ -3073,7 +3073,7 @@ button {
 
 .footer-col ul li i {
   margin-right: 8px;
-  color: #f2cb2f;
+  color: #ffc000;
   width: 16px;
 }
 
@@ -3193,7 +3193,7 @@ button {
     height: 60px;
     padding: 8px 10px;
     gap: 8px;
-    background: #f2cb2f;
+    background: #ffc000;
     color: #151414;
   }
 
@@ -4104,7 +4104,7 @@ button {
   justify-content: space-between;
   align-items: center;
   padding: 12px 15px;
-  background: #f2cb2f;
+  background: #ffc000;
   color: #151414;
   font-weight: 600;
   position: sticky;
@@ -4136,7 +4136,7 @@ button {
 .categories-accordion-item:hover,
 .categories-accordion-item.active {
   background: #f5f5f5;
-  color: #f2cb2f;
+  color: #ffc000;
   font-weight: 600;
 }
 
@@ -4195,7 +4195,7 @@ button {
 .auth-submit-btn {
   width: 100%;
   padding: 14px;
-  background: #f2cb2f;
+  background: #ffc000;
   color: #151414;
   border: none;
   border-radius: 8px;
@@ -4217,7 +4217,7 @@ button {
 }
 
 .auth-links a {
-  color: #f2cb2f;
+  color: #ffc000;
   font-size: 0.9rem;
   text-decoration: none;
 }
@@ -4650,7 +4650,7 @@ button {
 
 .bottom-nav-item.active i,
 .bottom-nav-item.active span {
-  color: #f2cb2f;
+  color: #ffc000;
 }
 
 .bottom-nav-item span {
@@ -4665,7 +4665,7 @@ button {
 .bottom-nav-home-icon {
   width: 52px;
   height: 52px;
-  background: #f2cb2f;
+  background: #ffc000;
   color: #151414;
   border-radius: 50%;
   display: flex;
@@ -4712,7 +4712,7 @@ button {
 
 .admin-login-header i {
   font-size: 40px;
-  color: #f2cb2f;
+  color: #ffc000;
   margin-bottom: 15px;
 }
 
@@ -4755,7 +4755,7 @@ button {
 .admin-login-btn {
   width: 100%;
   padding: 12px;
-  background: #f2cb2f;
+  background: #ffc000;
   color: #151414;
   border: none;
   border-radius: 6px;
@@ -4832,7 +4832,7 @@ button {
 }
 
 .admin-user-info i {
-  background: #f2cb2f;
+  background: #ffc000;
   color: #151414;
   border-radius: 50%;
   width: 32px;
@@ -5663,9 +5663,9 @@ button {
 }
 
 .address-type-btn.active {
-  border-color: #f2cb2f;
+  border-color: #ffc000;
   background: #c8e1ea;
-  color: #f2cb2f;
+  color: #ffc000;
 }
 
 .required {
@@ -6562,7 +6562,7 @@ button {
 }
 
 .contact-submit-btn {
-  background: #f2cb2f;
+  background: #ffc000;
   color: #151414;
   border: none;
   border-radius: var(--radius);
@@ -6600,7 +6600,7 @@ button {
   width: 50px;
   height: 50px;
   border-radius: 50%;
-  background: #f2cb2f;
+  background: #ffc000;
   color: #151414;
   display: flex;
   align-items: center;
@@ -6698,7 +6698,7 @@ button {
 }
 
 .blog-card-btn {
-  background: #f2cb2f;
+  background: #ffc000;
   color: #151414;
   border: none;
   padding: 8px 20px;
@@ -6806,7 +6806,7 @@ button {
 }
 
 .blog-detail-share a:hover {
-  background: #f2cb2f;
+  background: #ffc000;
   color: #151414;
 }
 
@@ -6876,7 +6876,7 @@ button {
 }
 
 .blog-comment-submit {
-  background: #f2cb2f;
+  background: #ffc000;
   color: #151414;
   border: none;
   padding: 10px 24px;
