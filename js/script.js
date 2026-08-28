@@ -2884,6 +2884,8 @@ function normalizeProduct(p) {
     sizes: sizes,
     colors: colors,
     description: p.description,
+    meli_url: p.meli_url || '',
+    characteristics: p.characteristics || '',
     specs: {
       "Composición": "Textil",
       "Talla": sizes.join(', '),
