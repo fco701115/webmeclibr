@@ -4061,6 +4061,7 @@ let blogImageData = null;
 async function loadAdminBlogs() {
   const data = await apiGet('/blogs/all');
   if (!data) return;
+  allBlogs = data;
   const tbody = document.getElementById('adminBlogsTable');
   if (!tbody) return;
   tbody.innerHTML = data.map(b => `
@@ -4072,28 +4073,16 @@ async function loadAdminBlogs() {
       <td>${b.active ? '<span style="color:#27ae60">Sí</span>' : '<span style="color:#e74c3c">No</span>'}</td>
       <td>${new Date(b.created_at).toLocaleDateString('es-ES')}</td>
       <td>
-        <button class="admin-action-btn edit" onclick='editBlog(${JSON.stringify(b).replace(/'/g, "&#39;")})'><i class="fas fa-edit"></i></button>
+        <button class="admin-action-btn edit" onclick="editBlogById(${b.id})"><i class="fas fa-edit"></i></button>
         <button class="admin-action-btn delete" onclick="deleteBlog(${b.id})"><i class="fas fa-trash"></i></button>
       </td>
     </tr>
   `).join('');
 }
 
-function showBlogModal(blog) {
-  document.getElementById('blogId').value = '';
-  document.getElementById('blogTitle').value = '';
-  document.getElementById('blogExcerpt').value = '';
-  document.getElementById('blogContent').value = '';
-  document.getElementById('blogAuthor').value = '';
-  document.getElementById('blogActive').value = 'true';
-  document.getElementById('blogModalTitle').textContent = 'Agregar Blog';
-  blogImageData = null;
-  document.getElementById('blogImagePreview').style.display = 'none';
-  document.getElementById('blogImagePlaceholder').style.display = 'block';
-  document.getElementById('blogModal').style.display = 'flex';
-}
-
-function editBlog(blog) {
+function editBlogById(id) {
+  const blog = allBlogs.find(b => b.id === id);
+  if (!blog) return;
   document.getElementById('blogId').value = blog.id;
   document.getElementById('blogTitle').value = blog.title || '';
   document.getElementById('blogExcerpt').value = blog.excerpt || '';
@@ -4111,6 +4100,20 @@ function editBlog(blog) {
     document.getElementById('blogImagePreview').style.display = 'none';
     document.getElementById('blogImagePlaceholder').style.display = 'block';
   }
+  document.getElementById('blogModal').style.display = 'flex';
+}
+
+function showBlogModal() {
+  document.getElementById('blogId').value = '';
+  document.getElementById('blogTitle').value = '';
+  document.getElementById('blogExcerpt').value = '';
+  document.getElementById('blogContent').value = '';
+  document.getElementById('blogAuthor').value = '';
+  document.getElementById('blogActive').value = 'true';
+  document.getElementById('blogModalTitle').textContent = 'Agregar Blog';
+  blogImageData = null;
+  document.getElementById('blogImagePreview').style.display = 'none';
+  document.getElementById('blogImagePlaceholder').style.display = 'block';
   document.getElementById('blogModal').style.display = 'flex';
 }
 
