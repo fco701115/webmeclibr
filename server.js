@@ -194,6 +194,10 @@ async function autoMigrate() {
       await pool.query("ALTER TABLE products ADD COLUMN IF NOT EXISTS meli_url TEXT DEFAULT ''");
       console.log('Auto-migración de products completada');
     }
+
+    // Clear cache after migration
+    Object.keys(cache).forEach(k => delete cache[k]);
+    console.log('Caché limpiado después de auto-migración');
   } catch (err) {
     console.error('Error en auto-migración:', err.message);
   }
