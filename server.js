@@ -384,33 +384,92 @@ app.get('/api/fetch-meli', async (req, res) => {
     if (!url) return res.status(400).json({ error: 'URL requerida' });
 
     let itemId = null;
+    let catalogId = null;
+    let finalUrl = url;
 
-    if (url.includes('meli.la') || url.includes('mercadolibre')) {
-      const redirectRes = await fetch(url, { redirect: 'follow', headers: { 'User-Agent': 'Mozilla/5.0' } });
-      const finalUrl = redirectRes.url;
-      const match = finalUrl.match(/(ML[A-Z]+-\d+)/);
-      if (match) itemId = match[1];
+    // Follow redirects to get the final URL
+    try {
+      const redirectRes = await fetch(url, { redirect: 'follow', headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' } });
+      finalUrl = redirectRes.url;
+    } catch (_) {}
+
+    // Extract item ID from URL patterns: MLM-123456789 or MLM12345678 (catalog)
+    const itemIdMatch = finalUrl.match(/(ML[A-Z]+-\d+)/);
+    const catalogMatch = finalUrl.match(/\/p\/(ML[A-Z]+\d+)/);
+
+    if (itemIdMatch) {
+      itemId = itemIdMatch[1];
+    } else if (catalogMatch) {
+      catalogId = catalogMatch[1];
+    } else {
+      // Try extracting from original URL
+      const origItemMatch = url.match(/(ML[A-Z]+-\d+)/);
+      const origCatalogMatch = url.match(/\/p\/(ML[A-Z]+\d+)/);
+      if (origItemMatch) itemId = origItemMatch[1];
+      else if (origCatalogMatch) catalogId = origCatalogMatch[1];
     }
 
-    const idMatch = url.match(/(ML[A-Z]+-\d+)/);
-    if (!itemId && idMatch) itemId = idMatch[1];
+    if (!itemId && !catalogId) {
+      // Check if it's a profile/search page and try to find first product link
+      const productLinkMatch = finalUrl.match(/mercadolibre\.com\.mx\/[^/]+\/p\/(ML[A-Z]+\d+)/);
+      if (productLinkMatch) {
+        catalogId = productLinkMatch[1];
+      } else {
+        return res.status(400).json({ error: 'No se encontró un producto válido en la URL. Asegúrate de pegar la URL de un producto específico (no de perfil o búsqueda).' });
+      }
+    }
 
-    if (!itemId) return res.status(400).json({ error: 'No se pudo extraer el ID del producto de la URL' });
+    let item = null;
 
-    const itemRes = await fetch(`https://api.mercadolibre.com/items/${itemId}`, {
-      headers: { 'User-Agent': 'Mozilla/5.0' }
-    });
-    if (!itemRes.ok) return res.status(404).json({ error: 'Producto no encontrado en Mercado Libre' });
-    const item = await itemRes.json();
+    if (itemId) {
+      const itemRes = await fetch(`https://api.mercadolibre.com/items/${itemId}`, {
+        headers: { 'User-Agent': 'Mozilla/5.0' }
+      });
+      if (itemRes.ok) item = await itemRes.json();
+    }
+
+    if (!item && catalogId) {
+      // For catalog products, search by product ID
+      const searchRes = await fetch(`https://api.mercadolibre.com/products/${catalogId}`, {
+        headers: { 'User-Agent': 'Mozilla/5.0' }
+      });
+      if (searchRes.ok) {
+        const catalog = await searchRes.json();
+        // Get the first available item from the catalog
+        if (catalog.items && catalog.items.length > 0) {
+          const firstItem = catalog.items[0];
+          const itemRes = await fetch(`https://api.mercadolibre.com/items/${firstItem.id}`, {
+            headers: { 'User-Agent': 'Mozilla/5.0' }
+          });
+          if (itemRes.ok) item = await itemRes.json();
+        }
+        // Use catalog data if item not available
+        if (!item && catalog.title) {
+          item = {
+            title: catalog.title,
+            price: catalog.price ? catalog.price.amount : 0,
+            original_price: catalog.original_price || null,
+            attributes: catalog.attributes || [],
+            pictures: catalog.pictures || [],
+            variations: catalog.variations || []
+          };
+        }
+      }
+    }
+
+    if (!item) return res.status(404).json({ error: 'Producto no encontrado en Mercado Libre' });
 
     let description = '';
     try {
-      const descRes = await fetch(`https://api.mercadolibre.com/items/${itemId}/description`, {
-        headers: { 'User-Agent': 'Mozilla/5.0' }
-      });
-      if (descRes.ok) {
-        const descData = await descRes.json();
-        description = descData.plain_text || '';
+      const itemIdForDesc = item.id || itemId;
+      if (itemIdForDesc) {
+        const descRes = await fetch(`https://api.mercadolibre.com/items/${itemIdForDesc}/description`, {
+          headers: { 'User-Agent': 'Mozilla/5.0' }
+        });
+        if (descRes.ok) {
+          const descData = await descRes.json();
+          description = descData.plain_text || '';
+        }
       }
     } catch (_) {}
 
@@ -427,12 +486,8 @@ app.get('/api/fetch-meli', async (req, res) => {
         const id = attr.id || '';
         const val = attr.value_name || '';
         if (!val) continue;
-        if (id === 'COLOR' || id === 'MAIN_COLOR') {
-          colors.push(val);
-        }
-        if (id === 'SIZE' || id === 'SIZES') {
-          sizes.push(val);
-        }
+        if (id === 'COLOR' || id === 'MAIN_COLOR') colors.push(val);
+        if (id === 'SIZE' || id === 'SIZES') sizes.push(val);
       }
     }
 
@@ -474,7 +529,7 @@ app.get('/api/fetch-meli', async (req, res) => {
       images,
       characteristics,
       category: item.category_id || '',
-      itemId
+      itemId: item.id || itemId || catalogId
     });
   } catch (err) {
     console.error('Error fetching ML product:', err);
