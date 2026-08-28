@@ -643,39 +643,10 @@ function addToCart(id) {
   const product = products.find(p => p.id === id);
   if (!product) return;
 
-  // If product has a Mercado Libre URL, redirect there instead
   if (product.meli_url) {
     window.open(product.meli_url, '_blank');
-    return;
-  }
-
-  const existing = cart.find(item => item.id === id);
-  if (existing) {
-    existing.qty++;
   } else {
-    cart.push({ ...product, qty: 1 });
-  }
-
-  updateCartUI();
-  renderCartPanel();
-
-  const btn = event.target.closest('.product-buy-btn') || event.target.closest('.detail-add-cart') || event.target.closest('.cmp-cart');
-  if (btn) {
-    const originalText = btn.querySelector('.buy-btn-text');
-    if (originalText) {
-      originalText.textContent = '¡Agregado!';
-    } else {
-      btn.textContent = '¡Agregado!';
-    }
-    btn.style.background = '#27ae60';
-    setTimeout(() => {
-      if (originalText) {
-        originalText.textContent = 'Agregar al carrito';
-      } else {
-        btn.textContent = 'Agregar al carrito';
-      }
-      btn.style.background = '';
-    }, 1200);
+    alert('Este producto no tiene enlace de Mercado Libre configurado.');
   }
 }
 
@@ -750,21 +721,7 @@ function renderCartPanel() {
 }
 
 function toggleCart() {
-  const panel = document.getElementById('cartPanel');
-  const overlay = document.getElementById('cartOverlay');
-  if (!panel || !overlay) return;
-
-  const isOpen = panel.classList.contains('open');
-  if (isOpen) {
-    panel.classList.remove('open');
-    overlay.classList.remove('open');
-    document.body.style.overflow = '';
-  } else {
-    renderCartPanel();
-    panel.classList.add('open');
-    overlay.classList.add('open');
-    document.body.style.overflow = 'hidden';
-  }
+  // Cart disabled - use Mercado Libre
 }
 
 // ========== WISHLIST ==========
@@ -972,7 +929,7 @@ function openCompareModal() {
       rating: rating + reviews,
       category: p.category || '-',
       description: desc.length > 160 ? desc.substring(0, 160) + '...' : desc,
-      actions: '<button class="cmp-cart" onclick="addToCart(' + p.id + ')">Agregar al carrito</button>' +
+      actions: '<button class="cmp-cart" onclick="addToCart(' + p.id + ')" style="' + (p.meli_url ? 'background:#FFE600;color:#2D3277;' : '') + '">' + (p.meli_url ? 'Comprar en ML' : 'Agregar al carrito') + '</button>' +
                '<button class="cmp-del" onclick="addToCompare(' + p.id + '); openCompareModal();">Eliminar</button>'
     };
   });
@@ -1175,7 +1132,6 @@ function showDetail(id) {
             : `<button class="detail-add-cart" onclick="addToCart(${product.id})">Agregar al carrito</button>`
           }
         </div>
-        ${product.meli_url ? '' : `<button class="detail-buy-now" onclick="addToCart(${product.id}); openCheckout(false)">Comprar ahora</button>`}
 
         <div class="detail-links">
           <a href="#" id="detailWishlistLink" onclick="event.preventDefault(); toggleDetailWishlist(${product.id})"><i class="far fa-heart"></i> Agregar a favoritos</a>
@@ -2010,13 +1966,7 @@ function renderCheckoutSummary() {
 let checkoutFromCart = false;
 
 function openCheckout(openCart = true) {
-  // If any product in cart has meli_url, redirect to first ML product
-  const mlItem = cart.find(item => item.meli_url);
-  if (mlItem) {
-    window.open(mlItem.meli_url, '_blank');
-    return;
-  }
-  alert('Lo sentimos, el checkout no está disponible. Los productos con enlace de Mercado Libre se compran directamente en ML.');
+  alert('El checkout no está disponible. Use el botón de Mercado Libre para comprar.');
 }
 
 function updateCheckoutQty(id, delta) {

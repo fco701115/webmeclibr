@@ -28,7 +28,7 @@
           <i class="fas fa-heart"></i>
           <span class="wishlist-count">0</span>
         </button>
-        <button class="icon-btn cart-btn" title="Carrito">
+        <button class="icon-btn cart-btn" title="Carrito" style="display:none !important;">
           <i class="fas fa-shopping-cart"></i>
           <span class="cart-count">0</span>
         </button>
@@ -58,11 +58,11 @@
     </div>
   </nav>
 
-  <!-- CART OVERLAY -->
-  <div class="cart-overlay" id="cartOverlay"></div>
+  <!-- CART OVERLAY (disabled - uses Mercado Libre) -->
+  <div class="cart-overlay" id="cartOverlay" style="display:none !important;"></div>
 
-  <!-- CART PANEL -->
-  <div class="cart-panel" id="cartPanel">
+  <!-- CART PANEL (disabled - uses Mercado Libre) -->
+  <div class="cart-panel" id="cartPanel" style="display:none !important;">
     <div class="cart-panel-header">
       <h3>Mi Carrito</h3>
       <button class="cart-close" onclick="toggleCart()"><i class="fas fa-times"></i></button>
@@ -1534,7 +1534,7 @@
         <span>Inicio</span>
       </div>
     </button>
-    <button class="bottom-nav-item" onclick="openCheckout()">
+    <button class="bottom-nav-item" onclick="openCheckout()" style="display:none !important;">
       <i class="fas fa-shopping-cart"></i>
       <span>Cart (<span class="bottom-cart-count">0</span>)</span>
     </button>
