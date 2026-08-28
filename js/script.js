@@ -478,7 +478,7 @@ function productCardHtml(p) {
           <button class="product-action-btn ${isInWishlist(p.id) ? 'wishlist-active' : ''}" data-tooltip="Favoritos" onclick="event.stopPropagation(); toggleWishlistBtn(this, ${p.id})"><i class="${isInWishlist(p.id) ? 'fas' : 'far'} fa-heart"></i></button>
           <button class="product-action-btn" data-tooltip="Comparar" onclick="event.stopPropagation(); addToCompare(${p.id}); openCompareModal()"><i class="fas fa-arrows-rotate"></i></button>
         </div>
-        <button class="product-buy-btn" onclick="event.stopPropagation(); addToCart(${p.id})" style="${p.meli_url ? 'background:#FFE600;color:#2D3277;' : ''}"><i class="fas fa-shopping-cart"></i><span class="buy-btn-text">${p.meli_url ? 'Comprar en ML' : 'Agregar al carrito'}</span></button>
+        <button class="product-buy-btn" onclick="event.stopPropagation(); addToCart(${p.id})" style="background:#FFE600;color:#2D3277;"><i class="fas fa-shopping-cart"></i><span class="buy-btn-text">Comprar en Mercado Libre</span></button>
       </div>
       <div class="product-info">
         <div class="product-info-content">
@@ -929,7 +929,7 @@ function openCompareModal() {
       rating: rating + reviews,
       category: p.category || '-',
       description: desc.length > 160 ? desc.substring(0, 160) + '...' : desc,
-      actions: '<button class="cmp-cart" onclick="addToCart(' + p.id + ')" style="' + (p.meli_url ? 'background:#FFE600;color:#2D3277;' : '') + '">' + (p.meli_url ? 'Comprar en ML' : 'Agregar al carrito') + '</button>' +
+      actions: '<button class="cmp-cart" onclick="addToCart(' + p.id + ')" style="background:#FFE600;color:#2D3277;">Comprar en Mercado Libre</button>' +
                '<button class="cmp-del" onclick="addToCompare(' + p.id + '); openCompareModal();">Eliminar</button>'
     };
   });
@@ -1046,7 +1046,7 @@ function showDetail(id) {
             <button class="product-action-btn ${isInWishlist(p.id) ? 'wishlist-active' : ''}" data-tooltip="Favoritos" onclick="event.stopPropagation(); toggleWishlistBtn(this, ${p.id})"><i class="${isInWishlist(p.id) ? 'fas' : 'far'} fa-heart"></i></button>
             <button class="product-action-btn" data-tooltip="Comparar" onclick="event.stopPropagation(); addToCompare(${p.id}); openCompareModal()"><i class="fas fa-arrows-rotate"></i></button>
           </div>
-          <button class="product-buy-btn" onclick="event.stopPropagation(); addToCart(${p.id})"><i class="fas fa-shopping-cart"></i><span class="buy-btn-text">Agregar al carrito</span></button>
+          <button class="product-buy-btn" onclick="event.stopPropagation(); addToCart(${p.id})"><i class="fas fa-shopping-cart"></i><span class="buy-btn-text">Comprar en Mercado Libre</span></button>
         </div>
         <div class="product-info">
           <div class="product-info-content">
@@ -1129,7 +1129,7 @@ function showDetail(id) {
         <div class="detail-actions">
           ${product.meli_url
             ? `<a href="${product.meli_url}" target="_blank" class="detail-add-cart" style="background:#FFE600;color:#2D3277;text-decoration:none;display:block;text-align:center;"><i class="fas fa-shopping-cart"></i> Comprar en Mercado Libre</a>`
-            : `<button class="detail-add-cart" onclick="addToCart(${product.id})">Agregar al carrito</button>`
+            : `<button class="detail-add-cart" onclick="addToCart(${product.id})" style="background:#FFE600;color:#2D3277;"><i class="fas fa-shopping-cart"></i> Comprar en Mercado Libre</button>`
           }
         </div>
 
@@ -2633,9 +2633,9 @@ function initSearch() {
           <div class="product-actions">
             <button class="product-action-btn" data-tooltip="Vista Rápida" onclick="event.stopPropagation(); quickView(${p.id})"><i class="fas fa-eye"></i></button>
             <button class="product-action-btn ${isInWishlist(p.id) ? 'wishlist-active' : ''}" data-tooltip="Favoritos" onclick="event.stopPropagation(); toggleWishlistBtn(this, ${p.id})"><i class="${isInWishlist(p.id) ? 'fas' : 'far'} fa-heart"></i></button>
-          <button class="product-action-btn" data-tooltip="Comparar" onclick="event.stopPropagation(); addToCompare(${p.id}); openCompareModal()"><i class="fas fa-arrows-rotate"></i></button>
+           <button class="product-action-btn" data-tooltip="Comparar" onclick="event.stopPropagation(); addToCompare(${p.id}); openCompareModal()"><i class="fas fa-arrows-rotate"></i></button>
         </div>
-        <button class="product-buy-btn" onclick="event.stopPropagation(); addToCart(${p.id})" style="${p.meli_url ? 'background:#FFE600;color:#2D3277;' : ''}"><i class="fas fa-shopping-cart"></i><span class="buy-btn-text">${p.meli_url ? 'Comprar en ML' : 'Agregar al carrito'}</span></button>
+        <button class="product-buy-btn" onclick="event.stopPropagation(); addToCart(${p.id})" style="background:#FFE600;color:#2D3277;"><i class="fas fa-shopping-cart"></i><span class="buy-btn-text">Comprar en Mercado Libre</span></button>
       </div>
       <div class="product-info">
         <div class="product-info-content">
