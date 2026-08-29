@@ -3284,19 +3284,7 @@ button {
   }
 
   .product-buy-btn {
-    opacity: 1;
-    width: 40px;
-    height: 40px;
-    position: absolute;
-    bottom: 8px;
-    right: 8px;
-    left: auto;
-    border-radius: 50%;
-    justify-content: center;
-    padding: 0;
-    transform: none;
-    font-size: 14px;
-    overflow: visible;
+    display: none;
   }
 
   .product-buy-btn .buy-btn-text {
