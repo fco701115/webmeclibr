@@ -1787,6 +1787,7 @@ button {
   border-radius: var(--radius);
   font-size: 0.7rem;
   font-weight: 700;
+  text-decoration: none !important;
 }
 
 .detail-rating {
