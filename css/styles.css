@@ -1026,6 +1026,11 @@ button {
   display: inline;
 }
 
+/* ML buy button (hidden on desktop, shown on mobile) */
+.ml-buy-btn {
+  display: none;
+}
+
 /* Product info area */
 .product-info {
   width: 100%;
@@ -3285,6 +3290,22 @@ button {
 
   .product-buy-btn {
     display: none;
+  }
+
+  .ml-buy-btn {
+    display: block;
+    width: 100%;
+    padding: 6px 0;
+    margin-top: 6px;
+    background: #FFE600;
+    color: #2D3277;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
   }
 
   .product-buy-btn .buy-btn-text {

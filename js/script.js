@@ -491,6 +491,7 @@ function productCardHtml(p) {
             <span class="price-current">$${p.price.toLocaleString('es-AR', {minimumFractionDigits: 2})}</span>
             ${originalPriceHtml}
           </div>
+          <a href="${p.meli_url || '#'}" target="_blank" class="ml-buy-btn" onclick="event.stopPropagation();">Comprar en Mercado Libre</a>
         </div>
       </div>
     </div>`;
@@ -1059,6 +1060,7 @@ function showDetail(id) {
               <span class="price-current">$${p.price.toLocaleString('es-AR', {minimumFractionDigits: 2})}</span>
               ${origPriceHtml}
             </div>
+            <a href="${p.meli_url || '#'}" target="_blank" class="ml-buy-btn" onclick="event.stopPropagation();">Comprar en Mercado Libre</a>
           </div>
         </div>
       </div>
@@ -2648,6 +2650,7 @@ function initSearch() {
             <span class="price-current">$${p.price.toLocaleString('es-AR', {minimumFractionDigits: 2})}</span>
             ${originalPriceHtml}
             </div>
+            <a href="${p.meli_url || '#'}" target="_blank" class="ml-buy-btn" onclick="event.stopPropagation();">Comprar en Mercado Libre</a>
           </div>
         </div>
       </div>
