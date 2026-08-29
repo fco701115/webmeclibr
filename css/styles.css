@@ -3330,9 +3330,10 @@ button {
   }
 
   .product-card {
-    width: 100%;
-    height: 295px;
+    width: 165px;
+    height: 325px;
     margin: 0;
+    padding: 10px;
   }
 
   .detail-related .product-card {
@@ -3353,6 +3354,11 @@ button {
 
   .product-card:hover .product-info-content {
     transform: none;
+  }
+
+  .product-info-content {
+    width: 137px;
+    height: 150px;
   }
 
   .wishlist-icon {
