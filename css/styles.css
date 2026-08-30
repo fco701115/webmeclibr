@@ -3206,7 +3206,7 @@ button {
     height: 60px;
     padding: 8px 10px;
     gap: 8px;
-  background: #ffe600;
+    background: #ffe600;
     color: #151414;
   }
 
@@ -3733,7 +3733,7 @@ button {
 
   .product-img-wrapper img {
     width: 100%;
-    height: auto;
+    height: 157px;
   }
 
   .section-title {
@@ -6678,14 +6678,14 @@ button {
   background: #fff;
   border-radius: var(--radius);
   overflow: hidden;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .blog-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
 }
 
 .blog-card-img {
@@ -6934,9 +6934,11 @@ button {
     grid-template-columns: 1fr;
     gap: 16px;
   }
+
   .blog-detail-title {
     font-size: 1.4rem;
   }
+
   .blog-detail-share {
     flex-wrap: wrap;
   }
@@ -6976,9 +6978,11 @@ button {
     white-space: nowrap;
     scrollbar-width: none;
   }
+
   .tabs-header::-webkit-scrollbar {
     display: none;
   }
+
   .tab-btn {
     padding: 10px 16px;
     font-size: 0.8rem;
@@ -7017,16 +7021,20 @@ button {
   .blog-detail-section {
     padding: 20px 16px 40px;
   }
+
   .blog-detail-hero {
     border-radius: 8px;
   }
+
   .blog-detail-meta {
     flex-direction: column;
     gap: 8px;
   }
+
   .blog-detail-share {
     gap: 8px;
   }
+
   .blog-comment-input,
   .blog-comment-textarea {
     font-size: 16px;
@@ -7039,17 +7047,21 @@ button {
     flex-wrap: wrap;
     gap: 8px;
   }
+
   .detail-features li {
     font-size: 0.85rem;
   }
+
   .detail-specs-table td {
     font-size: 0.85rem;
   }
+
   .detail-share a {
     width: 36px;
     height: 36px;
     font-size: 0.9rem;
   }
+
   .detail-info-items .info-item {
     font-size: 0.82rem;
   }
@@ -7060,6 +7072,7 @@ button {
   .checkout-steps {
     gap: 10px;
   }
+
   .checkout-step-header {
     font-size: 0.85rem;
   }
@@ -7071,11 +7084,13 @@ button {
     max-height: 85vh;
     padding: 12px;
   }
+
   .compare-table th,
   .compare-table td {
     padding: 6px 8px;
     font-size: 0.78rem;
   }
+
   .cmp-cell img {
     max-width: 60px;
     height: auto;
@@ -7094,6 +7109,7 @@ button {
   .auth-container {
     padding: 0 16px;
   }
+
   .auth-card {
     padding: 24px 20px;
   }
@@ -7104,6 +7120,7 @@ button {
   .product-card {
     -webkit-tap-highlight-color: transparent;
   }
+
   .product-card:active {
     opacity: 0.95;
   }
@@ -7114,12 +7131,15 @@ button {
   .hero-side-banners {
     gap: 8px;
   }
+
   .side-banner {
     height: 160px;
   }
+
   .side-banner-content h2 {
     font-size: 1rem;
   }
+
   .side-banner-content p {
     font-size: 0.75rem;
     display: none;
@@ -7144,13 +7164,16 @@ button {
 #meliUrl {
   transition: border-color 0.2s;
 }
+
 #meliUrl:focus {
   border-color: #27ae60;
   outline: none;
 }
+
 #meliFetchBtn:hover {
   background: #219a52;
 }
+
 #meliFetchBtn:disabled {
   background: #999;
   cursor: not-allowed;
