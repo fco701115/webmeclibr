@@ -1336,7 +1336,10 @@ function openProductById(id) {
         sizes: (p.sizes && typeof p.sizes === 'string' && p.sizes.trim()) ? p.sizes.split(',').map(s => s.trim()) : ["S", "M", "L", "XL"],
         colors: (p.colors && typeof p.colors === 'string' && p.colors.trim()) ? p.colors.split(',').map(c => c.trim()) : ["Negro", "Blanco"],
         description: p.description,
-        specs: { "Composición": "Textil", "Talla": p.sizes || '', "Peso": "0.3 kg", "Origen": "Argentina" }
+        specs: { "Composición": "Textil", "Talla": p.sizes || '', "Peso": "0.3 kg", "Origen": "Argentina" },
+        is_best_seller: p.is_best_seller || false,
+        meli_url: p.meli_url || '',
+        characteristics: p.characteristics || ''
       });
     }
     history.pushState({ productId: p.id }, '', getProductUrl(p));
