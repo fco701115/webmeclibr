@@ -1007,7 +1007,7 @@ function showDetail(id) {
     ? `<sup class="detail-price-original">$${product.originalPrice.toLocaleString('en-US', {minimumFractionDigits: 2})}</sup>`
     : '';
   const discountHtml = product.discount > 0
-    ? `<span class="detail-discount">Save ${product.discount}%</span>`
+    ? `<span class="detail-discount">${product.discount}% OFF</span>`
     : '';
 
   const featuresHtml = product.features
