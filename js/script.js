@@ -1004,7 +1004,7 @@ function showDetail(id) {
 
   const starsHtml = renderStars(product.rating);
   const originalPriceHtml = product.originalPrice
-    ? `<sup class="detail-price-original">$${product.originalPrice.toLocaleString('en-US', {minimumFractionDigits: 2})}</span>`
+    ? `<sup class="detail-price-original">$${product.originalPrice.toLocaleString('en-US', {minimumFractionDigits: 2})}</sup>`
     : '';
   const discountHtml = product.discount > 0
     ? `<span class="detail-discount">Save ${product.discount}%</span>`
