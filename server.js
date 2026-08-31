@@ -192,6 +192,7 @@ async function autoMigrate() {
     if (prodTableCheck.rows[0].exists) {
       await pool.query("ALTER TABLE products ADD COLUMN IF NOT EXISTS characteristics TEXT DEFAULT ''");
       await pool.query("ALTER TABLE products ADD COLUMN IF NOT EXISTS meli_url TEXT DEFAULT ''");
+      await pool.query("ALTER TABLE products ADD COLUMN IF NOT EXISTS is_best_seller BOOLEAN DEFAULT FALSE");
       console.log('Auto-migración de products completada');
     }
 
