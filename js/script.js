@@ -1093,7 +1093,10 @@ function showDetail(id) {
       </div>
 
       <div class="detail-info">
-        <span class="detail-category">${product.category}</span>
+        <div class="detail-badges">
+          <span class="detail-category">${product.category}</span>
+          ${product.is_best_seller ? '<span class="detail-best-seller">MAS VENDIDO</span>' : ''}
+        </div>
         <h1 class="detail-name">${product.name}</h1>
         <div class="detail-price-row">
           <span class="detail-price-current">$${product.price.toLocaleString('en-US', {minimumFractionDigits: 2})}</span>
@@ -2889,6 +2892,7 @@ function normalizeProduct(p) {
     description: p.description,
     meli_url: p.meli_url || '',
     characteristics: p.characteristics || '',
+    is_best_seller: p.is_best_seller || false,
     specs: {
       "Composición": "Textil",
       "Talla": sizes.join(', '),
@@ -3367,6 +3371,7 @@ function showAddProductModal() {
   document.getElementById('productColors').value = '';
   document.getElementById('productDescription').value = '';
   document.getElementById('productCharacteristics').value = '';
+  document.getElementById('productBestSeller').checked = false;
   
   for (let i = 1; i <= 5; i++) {
     productImages[i] = null;
@@ -3601,6 +3606,7 @@ async function editProduct(id) {
   document.getElementById('productDescription').value = product.description || '';
   document.getElementById('productCharacteristics').value = product.characteristics || '';
   document.getElementById('meliUrl').value = product.meli_url || '';
+  document.getElementById('productBestSeller').checked = product.is_best_seller || false;
   calcDiscount();
   
   const images = product.images || (product.image ? [product.image] : []);
@@ -3661,6 +3667,7 @@ async function saveProduct() {
   const description = document.getElementById('productDescription').value.trim();
   const characteristics = document.getElementById('productCharacteristics').value.trim();
   const meli_url = document.getElementById('meliUrl').value.trim();
+  const is_best_seller = document.getElementById('productBestSeller').checked;
   
   const images = [];
   for (let i = 1; i <= 5; i++) {
@@ -3682,7 +3689,7 @@ async function saveProduct() {
     return;
   }
 
-  const data = { name, price, original_price, discount, stock, category, sizes, colors, images, description, characteristics, meli_url };
+  const data = { name, price, original_price, discount, stock, category, sizes, colors, images, description, characteristics, meli_url, is_best_seller };
   
   if (id) {
     await apiPut('/products/' + id, data);

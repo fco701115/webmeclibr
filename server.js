@@ -586,13 +586,13 @@ app.get('/api/fetch-meli', async (req, res) => {
 // POST create product
 app.post('/api/products', async (req, res) => {
   try {
-    const { name, price, original_price, discount, stock, category, sizes, colors, images, description, characteristics, meli_url } = req.body;
+    const { name, price, original_price, discount, stock, category, sizes, colors, images, description, characteristics, meli_url, is_best_seller } = req.body;
     const imagesJson = JSON.stringify(images || []);
     const firstImage = (images && images.length > 0) ? images[0] : null;
     const result = await pool.query(
-      `INSERT INTO products (name, price, original_price, discount, stock, category, sizes, colors, image, images, description, characteristics, meli_url)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING *`,
-      [name, price, original_price, discount, stock || 0, category, sizes || '', colors || '', firstImage, imagesJson, description, characteristics || '', meli_url || '']
+      `INSERT INTO products (name, price, original_price, discount, stock, category, sizes, colors, image, images, description, characteristics, meli_url, is_best_seller)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14) RETURNING *`,
+      [name, price, original_price, discount, stock || 0, category, sizes || '', colors || '', firstImage, imagesJson, description, characteristics || '', meli_url || '', is_best_seller || false]
     );
     res.status(201).json(result.rows[0]);
   } catch (err) {
@@ -605,13 +605,13 @@ app.post('/api/products', async (req, res) => {
 app.put('/api/products/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, price, original_price, discount, stock, category, sizes, colors, images, description, characteristics, meli_url } = req.body;
+    const { name, price, original_price, discount, stock, category, sizes, colors, images, description, characteristics, meli_url, is_best_seller } = req.body;
     const imagesJson = JSON.stringify(images || []);
     const firstImage = (images && images.length > 0) ? images[0] : null;
     const result = await pool.query(
-      `UPDATE products SET name=$1, price=$2, original_price=$3, discount=$4, stock=$5, category=$6, sizes=$7, colors=$8, image=$9, images=$10, description=$11, characteristics=$12, meli_url=$13
-       WHERE id=$14 RETURNING *`,
-      [name, price, original_price, discount, stock || 0, category, sizes || '', colors || '', firstImage, imagesJson, description, characteristics || '', meli_url || '', id]
+      `UPDATE products SET name=$1, price=$2, original_price=$3, discount=$4, stock=$5, category=$6, sizes=$7, colors=$8, image=$9, images=$10, description=$11, characteristics=$12, meli_url=$13, is_best_seller=$14
+       WHERE id=$15 RETURNING *`,
+      [name, price, original_price, discount, stock || 0, category, sizes || '', colors || '', firstImage, imagesJson, description, characteristics || '', meli_url || '', is_best_seller || false, id]
     );
     if (result.rows.length === 0) {
       return res.status(404).json({ error: 'Producto no encontrado' });

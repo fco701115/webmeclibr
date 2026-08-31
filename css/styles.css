@@ -1749,7 +1749,26 @@ button {
   font-size: 0.75rem;
   font-weight: 500;
   color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.detail-badges {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.detail-best-seller {
+  display: inline-block;
+  padding: 4px 12px;
+  background: #f07208;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #fff;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
