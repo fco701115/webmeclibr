@@ -778,6 +778,13 @@
             <input type="file" id="productImageInput3" accept="image/*" style="display: none;" onchange="previewProductImage(event, 3)">
             <input type="file" id="productImageInput4" accept="image/*" style="display: none;" onchange="previewProductImage(event, 4)">
             <input type="file" id="productImageInput5" accept="image/*" style="display: none;" onchange="previewProductImage(event, 5)">
+            <div style="margin-top:8px; display:flex; flex-direction:column; gap:6px;">
+              <input type="text" id="productImageUrl1" placeholder="URL imagen 1 (https://...)" oninput="loadImageFromUrl(1)" style="padding:8px; border:1px solid #ddd; border-radius:6px; font-size:0.85rem;">
+              <input type="text" id="productImageUrl2" placeholder="URL imagen 2 (https://...)" oninput="loadImageFromUrl(2)" style="padding:8px; border:1px solid #ddd; border-radius:6px; font-size:0.85rem;">
+              <input type="text" id="productImageUrl3" placeholder="URL imagen 3 (https://...)" oninput="loadImageFromUrl(3)" style="padding:8px; border:1px solid #ddd; border-radius:6px; font-size:0.85rem;">
+              <input type="text" id="productImageUrl4" placeholder="URL imagen 4 (https://...)" oninput="loadImageFromUrl(4)" style="padding:8px; border:1px solid #ddd; border-radius:6px; font-size:0.85rem;">
+              <input type="text" id="productImageUrl5" placeholder="URL imagen 5 (https://...)" oninput="loadImageFromUrl(5)" style="padding:8px; border:1px solid #ddd; border-radius:6px; font-size:0.85rem;">
+            </div>
           </div>
           <div class="admin-input-group" style="margin-top:16px; background:#f8f9fa; padding:14px; border-radius:8px; border:1px solid #ddd;">
             <label style="font-weight:700; color:#333; margin-bottom:6px; display:block;">

@@ -3381,6 +3381,7 @@ function showAddProductModal() {
     document.getElementById('productImagePreview' + i).style.display = 'none';
     document.getElementById('productImagePlaceholder' + i).style.display = 'flex';
     document.getElementById('productImageInput' + i).value = '';
+    document.getElementById('productImageUrl' + i).value = '';
   }
   
   loadProductCategories();
@@ -3619,10 +3620,14 @@ async function editProduct(id) {
       document.getElementById('productImagePreview' + i).src = images[i - 1];
       document.getElementById('productImagePreview' + i).style.display = 'block';
       document.getElementById('productImagePlaceholder' + i).style.display = 'none';
+      if (typeof images[i - 1] === 'string') {
+        document.getElementById('productImageUrl' + i).value = images[i - 1];
+      }
     } else {
       productImages[i] = null;
       document.getElementById('productImagePreview' + i).style.display = 'none';
       document.getElementById('productImagePlaceholder' + i).style.display = 'flex';
+      document.getElementById('productImageUrl' + i).value = '';
     }
     document.getElementById('productImageInput' + i).value = '';
   }
@@ -3654,6 +3659,22 @@ function previewProductImage(event, slot) {
     document.getElementById('productImagePreview' + slot).src = url;
     document.getElementById('productImagePreview' + slot).style.display = 'block';
     document.getElementById('productImagePlaceholder' + slot).style.display = 'none';
+    document.getElementById('productImageUrl' + slot).value = '';
+  }
+}
+
+function loadImageFromUrl(slot) {
+  const url = document.getElementById('productImageUrl' + slot).value.trim();
+  if (url) {
+    productImages[slot] = url;
+    document.getElementById('productImagePreview' + slot).src = url;
+    document.getElementById('productImagePreview' + slot).style.display = 'block';
+    document.getElementById('productImagePlaceholder' + slot).style.display = 'none';
+    document.getElementById('productImageInput' + slot).value = '';
+  } else {
+    productImages[slot] = null;
+    document.getElementById('productImagePreview' + slot).style.display = 'none';
+    document.getElementById('productImagePlaceholder' + slot).style.display = 'flex';
   }
 }
 
