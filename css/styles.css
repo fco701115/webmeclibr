@@ -1093,7 +1093,6 @@ button {
 }
 
 .star.half {
-  color: #f5a623;
   position: relative;
   display: inline-block;
 }
@@ -1102,8 +1101,6 @@ button {
   content: '★';
   position: absolute;
   left: 0;
-  width: 50%;
-  overflow: hidden;
   color: #f5a623;
 }
 
