@@ -15,7 +15,7 @@
   --text-light: #666;
   --border: #e5e5e5;
   --card-bg: #ffffff;
-  --star: #f5a623;
+  --star: #3483fa;
   --radius: 4px;
   --max-width: 1300px;
   --transition: 200ms ease;
@@ -1089,7 +1089,7 @@ button {
 }
 
 .star.full {
-  color: #f5a623;
+  color: #3483fa;
 }
 
 .star.half {
@@ -1101,7 +1101,7 @@ button {
   content: '★';
   position: absolute;
   left: 0;
-  color: #f5a623;
+  color: #3483fa;
 }
 
 .star.half::after {
@@ -1159,7 +1159,7 @@ button {
 }
 
 .admin-star-half.active {
-  color: #f5a623;
+  color: #3483fa;
 }
 
 .admin-rating-value {
@@ -2238,7 +2238,7 @@ button {
 
 .reviews-avg-stars {
   font-size: 1.2rem;
-  color: #f5a623;
+  color: #3483fa;
   margin: 4px 0;
 }
 
@@ -2277,7 +2277,7 @@ button {
 }
 
 .review-stars {
-  color: #f5a623;
+  color: #3483fa;
   font-size: 1rem;
 }
 
@@ -2369,7 +2369,7 @@ button {
 .star-label:hover,
 .star-label:hover~.star-label,
 .review-star-input input:checked~.star-label {
-  color: #f5a623;
+  color: #3483fa;
 }
 
 .review-submit-btn {

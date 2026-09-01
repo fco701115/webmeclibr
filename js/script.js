@@ -3391,7 +3391,7 @@ async function loadAdminReviews() {
       <td>${r.id}</td>
       <td>${r.product_name || 'Producto #' + r.product_id}</td>
       <td>${escapeHtml(r.user_name)}</td>
-      <td><span class="stars" style="color:#f5a623">${renderStars(r.rating)}</span></td>
+      <td><span class="stars" style="color:#3483fa">${renderStars(r.rating)}</span></td>
       <td>${r.title ? escapeHtml(r.title) : '-'}</td>
       <td>${r.comment ? escapeHtml(r.comment.substring(0, 60)) + (r.comment.length > 60 ? '...' : '') : '-'}</td>
       <td>${new Date(r.created_at).toLocaleDateString('es-ES')}</td>
