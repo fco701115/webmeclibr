@@ -1085,7 +1085,7 @@ button {
 .stars {
   display: inline-flex;
   gap: 1px;
-  font-size: 0.8rem;
+  font-size: 14px;
 }
 
 .star.full {

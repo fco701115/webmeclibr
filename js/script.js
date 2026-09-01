@@ -595,14 +595,15 @@ function navigateToCategory(category) {
 
 // ========== RENDER STARS ==========
 function renderStars(rating) {
+  rating = Math.min(5, Math.max(0, parseFloat(rating) || 0));
   const full = Math.floor(rating);
   const hasHalf = rating % 1 >= 0.25 && rating % 1 < 0.75;
   const roundUp = rating % 1 >= 0.75 ? 1 : 0;
-  const totalFull = full + roundUp;
+  const totalFull = Math.min(5, full + roundUp);
   const empty = 5 - totalFull - (hasHalf ? 1 : 0);
   let html = '';
   for (let i = 0; i < totalFull; i++) html += '<span class="star full">&#9733;</span>';
-  if (hasHalf) html += '<span class="star half">&#9733;</span>';
+  if (hasHalf && totalFull + 1 <= 5) html += '<span class="star half">&#9733;</span>';
   for (let i = 0; i < empty; i++) html += '<span class="star empty">&#9733;</span>';
   return html;
 }
