@@ -484,6 +484,7 @@ function productCardHtml(p) {
         <div class="product-info-content">
           <h3 class="product-name">${p.name}</h3>
           <div class="product-rating">
+            <span class="rating-number">${p.rating}</span>
             <span class="stars">${starsHtml}</span>
             <span class="rating-count">(${p.reviews})</span>
           </div>
@@ -1052,10 +1053,11 @@ function showDetail(id) {
         <div class="product-info">
           <div class="product-info-content">
             <h3 class="product-name">${p.name}</h3>
-            <div class="product-rating">
-              <span class="stars">${starsHtml}</span>
-              <span class="rating-count">(${p.reviews})</span>
-            </div>
+          <div class="product-rating">
+            <span class="rating-number">${p.rating}</span>
+            <span class="stars">${starsHtml}</span>
+            <span class="rating-count">(${p.reviews})</span>
+          </div>
             <div class="product-price">
               <span class="price-current">$${p.price.toLocaleString('es-AR', {minimumFractionDigits: 2})}</span>
               ${origPriceHtml}
@@ -1104,8 +1106,9 @@ function showDetail(id) {
           ${discountHtml}
         </div>
         <div class="detail-rating">
+          <span class="rating-number">${product.rating}</span>
           <span class="stars">${starsHtml}</span>
-          <span class="rating-count">(${product.reviews} reviews)</span>
+          <span class="rating-count">(${product.reviews})</span>
         </div>
 
         <ul class="detail-features">${featuresHtml}</ul>
@@ -2649,6 +2652,7 @@ function initSearch() {
         <div class="product-info-content">
           <h3 class="product-name">${p.name}</h3>
           <div class="product-rating">
+            <span class="rating-number">${p.rating}</span>
             <span class="stars">${starsHtml}</span>
             <span class="rating-count">(${p.reviews})</span>
           </div>
@@ -3369,7 +3373,8 @@ function showAddProductModal() {
   document.getElementById('productPrice').value = '';
   document.getElementById('productOriginalPrice').value = '';
   document.getElementById('productDiscount').value = '';
-  document.getElementById('productStock').value = '';
+  document.getElementById('productRating').value = '';
+  document.getElementById('productReviews').value = '';
   document.getElementById('productSizes').value = '';
   document.getElementById('productColors').value = '';
   document.getElementById('productDescription').value = '';
@@ -3604,7 +3609,8 @@ async function editProduct(id) {
   document.getElementById('productOriginalPrice').value = product.original_price || '';
   document.getElementById('productPrice').value = product.price;
   document.getElementById('productDiscount').value = product.discount || '';
-  document.getElementById('productStock').value = product.stock || 0;
+  document.getElementById('productRating').value = product.rating || '';
+  document.getElementById('productReviews').value = product.reviews || '';
   document.getElementById('productSizes').value = product.sizes || '';
   document.getElementById('productColors').value = product.colors || '';
   document.getElementById('productDescription').value = product.description || '';
@@ -3684,7 +3690,8 @@ async function saveProduct() {
   const price = document.getElementById('productPrice').value;
   const original_price = document.getElementById('productOriginalPrice').value || null;
   const discount = document.getElementById('productDiscount').value || 0;
-  const stock = document.getElementById('productStock').value || 0;
+  const rating = parseFloat(document.getElementById('productRating').value) || 0;
+  const reviews = parseInt(document.getElementById('productReviews').value) || 0;
   const category = document.getElementById('productCategory').value;
   const sizes = document.getElementById('productSizes').value.trim();
   const colors = document.getElementById('productColors').value.trim();
@@ -3713,7 +3720,7 @@ async function saveProduct() {
     return;
   }
 
-  const data = { name, price, original_price, discount, stock, category, sizes, colors, images, description, characteristics, meli_url, is_best_seller };
+  const data = { name, price, original_price, discount, rating, reviews, category, sizes, colors, images, description, characteristics, meli_url, is_best_seller };
   
   if (id) {
     await apiPut('/products/' + id, data);
