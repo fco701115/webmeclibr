@@ -1083,9 +1083,37 @@ button {
 }
 
 .stars {
-  color: var(--star);
-  letter-spacing: 1px;
+  display: inline-flex;
+  gap: 1px;
   font-size: 0.8rem;
+}
+
+.star.full {
+  color: #f5a623;
+}
+
+.star.half {
+  color: #f5a623;
+  position: relative;
+  display: inline-block;
+}
+
+.star.half::before {
+  content: '★';
+  position: absolute;
+  left: 0;
+  width: 50%;
+  overflow: hidden;
+  color: #f5a623;
+}
+
+.star.half::after {
+  content: '★';
+  color: #ccc;
+}
+
+.star.empty {
+  color: #ccc;
 }
 
 .rating-count {

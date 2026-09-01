@@ -596,12 +596,14 @@ function navigateToCategory(category) {
 // ========== RENDER STARS ==========
 function renderStars(rating) {
   const full = Math.floor(rating);
-  const half = rating % 1 >= 0.5 ? 1 : 0;
-  const empty = 5 - full - half;
+  const hasHalf = rating % 1 >= 0.25 && rating % 1 < 0.75;
+  const roundUp = rating % 1 >= 0.75 ? 1 : 0;
+  const totalFull = full + roundUp;
+  const empty = 5 - totalFull - (hasHalf ? 1 : 0);
   let html = '';
-  for (let i = 0; i < full; i++) html += '★';
-  if (half) html += '★';
-  for (let i = 0; i < empty; i++) html += '☆';
+  for (let i = 0; i < totalFull; i++) html += '<span class="star full">&#9733;</span>';
+  if (hasHalf) html += '<span class="star half">&#9733;</span>';
+  for (let i = 0; i < empty; i++) html += '<span class="star empty">&#9733;</span>';
   return html;
 }
 
