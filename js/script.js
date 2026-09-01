@@ -605,6 +605,72 @@ function renderStars(rating) {
   return html;
 }
 
+// ========== ADMIN STAR RATING WIDGET ==========
+let adminSelectedRating = 0;
+
+function initAdminStarRating() {
+  const container = document.getElementById('adminStars');
+  if (!container) return;
+  container.innerHTML = '';
+  for (let i = 1; i <= 5; i++) {
+    const star = document.createElement('div');
+    star.className = 'admin-star';
+    star.dataset.value = i;
+
+    const leftHalf = document.createElement('span');
+    leftHalf.className = 'admin-star-half admin-star-left';
+    leftHalf.dataset.value = i - 0.5;
+
+    const rightHalf = document.createElement('span');
+    rightHalf.className = 'admin-star-half admin-star-right';
+    rightHalf.dataset.value = i;
+
+    star.appendChild(leftHalf);
+    star.appendChild(rightHalf);
+
+    leftHalf.addEventListener('mouseenter', () => previewAdminRating(i - 0.5));
+    rightHalf.addEventListener('mouseenter', () => previewAdminRating(i));
+    leftHalf.addEventListener('mouseleave', () => renderAdminRating(adminSelectedRating));
+    rightHalf.addEventListener('mouseleave', () => renderAdminRating(adminSelectedRating));
+    leftHalf.addEventListener('click', () => setAdminRating(i - 0.5));
+    rightHalf.addEventListener('click', () => setAdminRating(i));
+
+    container.appendChild(star);
+  }
+  renderAdminRating(adminSelectedRating);
+}
+
+function previewAdminRating(rating) {
+  renderAdminRating(rating);
+}
+
+function setAdminRating(rating) {
+  adminSelectedRating = rating;
+  document.getElementById('productRating').value = rating;
+  document.getElementById('adminRatingValue').textContent = rating.toFixed(1);
+  renderAdminRating(rating);
+}
+
+function renderAdminRating(rating) {
+  const stars = document.querySelectorAll('.admin-star');
+  stars.forEach((star, index) => {
+    const starValue = index + 1;
+    const leftHalf = star.querySelector('.admin-star-left');
+    const rightHalf = star.querySelector('.admin-star-right');
+
+    if (rating >= starValue) {
+      leftHalf.classList.add('active');
+      rightHalf.classList.add('active');
+    } else if (rating >= starValue - 0.5) {
+      leftHalf.classList.add('active');
+      rightHalf.classList.remove('active');
+    } else {
+      leftHalf.classList.remove('active');
+      rightHalf.classList.remove('active');
+    }
+  });
+}
+
 // ========== RENDER FILTERS ==========
 function renderFilters() {
   const container = document.getElementById('filterAccordion');
@@ -3373,13 +3439,17 @@ function showAddProductModal() {
   document.getElementById('productPrice').value = '';
   document.getElementById('productOriginalPrice').value = '';
   document.getElementById('productDiscount').value = '';
-  document.getElementById('productRating').value = '';
+  document.getElementById('productRating').value = '0';
   document.getElementById('productReviews').value = '';
   document.getElementById('productSizes').value = '';
   document.getElementById('productColors').value = '';
   document.getElementById('productDescription').value = '';
   document.getElementById('productCharacteristics').value = '';
   document.getElementById('productBestSeller').checked = false;
+  
+  adminSelectedRating = 0;
+  document.getElementById('adminRatingValue').textContent = '0.0';
+  initAdminStarRating();
   
   for (let i = 1; i <= 5; i++) {
     productImages[i] = null;
@@ -3609,7 +3679,7 @@ async function editProduct(id) {
   document.getElementById('productOriginalPrice').value = product.original_price || '';
   document.getElementById('productPrice').value = product.price;
   document.getElementById('productDiscount').value = product.discount || '';
-  document.getElementById('productRating').value = product.rating || '';
+  document.getElementById('productRating').value = product.rating || 0;
   document.getElementById('productReviews').value = product.reviews || '';
   document.getElementById('productSizes').value = product.sizes || '';
   document.getElementById('productColors').value = product.colors || '';
@@ -3617,6 +3687,10 @@ async function editProduct(id) {
   document.getElementById('productCharacteristics').value = product.characteristics || '';
   document.getElementById('meliUrl').value = product.meli_url || '';
   document.getElementById('productBestSeller').checked = product.is_best_seller || false;
+  
+  adminSelectedRating = parseFloat(product.rating) || 0;
+  document.getElementById('adminRatingValue').textContent = adminSelectedRating.toFixed(1);
+  initAdminStarRating();
   calcDiscount();
   
   const images = product.images || (product.image ? [product.image] : []);
