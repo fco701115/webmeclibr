@@ -5442,7 +5442,7 @@ button {
 }
 
 .admin-form-row:has(#productRating) {
-  grid-template-columns: 33% 38% 20%;
+  grid-template-columns: 33% 38% 18%;
 }
 
 .admin-form-row .admin-input-group {
