@@ -1185,6 +1185,13 @@ button {
   min-width: 30px;
 }
 
+.admin-rating-input-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+
 .product-price {
   display: flex;
   align-items: center;

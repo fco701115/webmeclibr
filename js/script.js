@@ -654,6 +654,16 @@ function setAdminRating(rating) {
   renderAdminRating(rating);
 }
 
+function syncRatingFromInput() {
+  const input = document.getElementById('productRating');
+  let val = parseFloat(input.value);
+  if (isNaN(val)) val = 0;
+  val = Math.min(5, Math.max(0, val));
+  adminSelectedRating = val;
+  document.getElementById('adminRatingValue').textContent = val.toFixed(1);
+  renderAdminRating(val);
+}
+
 function renderAdminRating(rating) {
   const stars = document.querySelectorAll('.admin-star');
   stars.forEach((star, index) => {
