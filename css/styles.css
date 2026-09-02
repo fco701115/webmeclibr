@@ -5449,6 +5449,11 @@ button {
   margin-bottom: 0;
 }
 
+.admin-form-row:has(#productRating) .admin-input-group:nth-child(3) {
+  width: 140px;
+  height: 66px;
+}
+
 .admin-modal-body textarea {
   width: 100%;
   padding: 10px 15px;
