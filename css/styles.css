@@ -1208,6 +1208,12 @@ button {
   opacity: 1;
 }
 
+#productReviews {
+  width: 150px;
+  min-width: 150px;
+  height: 38px;
+}
+
 .product-price {
   display: flex;
   align-items: center;
