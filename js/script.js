@@ -1412,7 +1412,12 @@ function openProductById(id) {
         category: p.category,
         image: images[0] || '',
         images: images,
-        features: ["Tejido de alta calidad", "Diseño moderno y cómodo", "Perfecto para el día a día"],
+        features: (function() {
+          const c = p.characteristics || '';
+          if (Array.isArray(c)) return c.map(x => String(x).trim()).filter(Boolean);
+          if (typeof c === 'string' && c.trim()) return c.split(/\r?\n|,/).map(x => x.trim()).filter(Boolean);
+          return [];
+        })(),
         sizes: (p.sizes && typeof p.sizes === 'string' && p.sizes.trim()) ? p.sizes.split(',').map(s => s.trim()) : ["S", "M", "L", "XL"],
         colors: (p.colors && typeof p.colors === 'string' && p.colors.trim()) ? p.colors.split(',').map(c => c.trim()) : ["Negro", "Blanco"],
         description: p.description,
@@ -2955,6 +2960,16 @@ function normalizeProduct(p) {
     colors = ["Negro", "Blanco"];
   }
 
+  let characteristics = p.characteristics || '';
+  let features;
+  if (Array.isArray(characteristics)) {
+    features = characteristics.map(c => String(c).trim()).filter(Boolean);
+  } else if (typeof characteristics === 'string' && characteristics.trim()) {
+    features = characteristics.split(/\r?\n|,/).map(c => c.trim()).filter(Boolean);
+  } else {
+    features = [];
+  }
+
   return {
     id: p.id,
     name: p.name,
@@ -2966,16 +2981,12 @@ function normalizeProduct(p) {
     category: p.category,
     image: images[0] || p.image,
     images: images,
-    features: [
-      "Tejido de alta calidad",
-      "Diseño moderno y cómodo",
-      "Perfecto para el día a día"
-    ],
+    features: features,
     sizes: sizes,
     colors: colors,
     description: p.description,
     meli_url: p.meli_url || '',
-    characteristics: p.characteristics || '',
+    characteristics: characteristics,
     is_best_seller: p.is_best_seller || false,
     specs: {
       "Composición": "Textil",
