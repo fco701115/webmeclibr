@@ -1185,9 +1185,10 @@ button {
 }
 
 .admin-rating-input {
-  width: 80px;
-  min-width: 80px;
-  padding: 8px 4px;
+  width: 50px;
+  min-width: 50px;
+  height: 38px;
+  padding: 4px;
   border: 1px solid #ddd;
   border-radius: 6px;
   font-size: 0.9rem;
