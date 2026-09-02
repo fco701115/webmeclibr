@@ -5441,6 +5441,10 @@ button {
   gap: 15px;
 }
 
+.admin-form-row:has(#productRating) {
+  grid-template-columns: 33% 40% 27%;
+}
+
 .admin-form-row .admin-input-group {
   margin-bottom: 0;
 }
