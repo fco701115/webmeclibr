@@ -1178,18 +1178,18 @@ button {
   transform: scale(1.1);
 }
 
-.admin-rating-value {
-  font-weight: 700;
-  font-size: 1rem;
-  color: #333;
-  min-width: 30px;
-}
-
-.admin-rating-input-row {
+.admin-rating-inline {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-top: 6px;
+  gap: 10px;
+}
+
+.admin-rating-input {
+  width: 70px;
+  padding: 6px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 0.85rem;
 }
 
 .product-price {

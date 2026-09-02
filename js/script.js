@@ -650,7 +650,6 @@ function previewAdminRating(rating) {
 function setAdminRating(rating) {
   adminSelectedRating = rating;
   document.getElementById('productRating').value = rating;
-  document.getElementById('adminRatingValue').textContent = rating.toFixed(1);
   renderAdminRating(rating);
 }
 
@@ -660,7 +659,6 @@ function syncRatingFromInput() {
   if (isNaN(val)) val = 0;
   val = Math.min(5, Math.max(0, val));
   adminSelectedRating = val;
-  document.getElementById('adminRatingValue').textContent = val.toFixed(1);
   renderAdminRating(val);
 }
 
@@ -3461,7 +3459,6 @@ function showAddProductModal() {
   document.getElementById('productBestSeller').checked = false;
   
   adminSelectedRating = 0;
-  document.getElementById('adminRatingValue').textContent = '0.0';
   initAdminStarRating();
   
   for (let i = 1; i <= 5; i++) {
@@ -3702,7 +3699,6 @@ async function editProduct(id) {
   document.getElementById('productBestSeller').checked = product.is_best_seller || false;
   
   adminSelectedRating = parseFloat(product.rating) || 0;
-  document.getElementById('adminRatingValue').textContent = adminSelectedRating.toFixed(1);
   initAdminStarRating();
   calcDiscount();
   
