@@ -1478,6 +1478,10 @@ function handleRoute() {
       const p = products.find(x => x.id === id);
       if (p) { showDetail(id); return true; }
     }
+    if (typeof apiGet === 'function') {
+      openProductById(id);
+      return true;
+    }
     setTimeout(handleRoute, 200);
     return true;
   }
