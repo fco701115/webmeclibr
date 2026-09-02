@@ -195,6 +195,7 @@ async function autoMigrate() {
       await pool.query("ALTER TABLE products ADD COLUMN IF NOT EXISTS is_best_seller BOOLEAN DEFAULT FALSE");
       await pool.query("ALTER TABLE products ADD COLUMN IF NOT EXISTS show_sizes BOOLEAN DEFAULT TRUE");
       await pool.query("ALTER TABLE products ADD COLUMN IF NOT EXISTS show_colors BOOLEAN DEFAULT TRUE");
+      await pool.query("ALTER TABLE products ADD COLUMN IF NOT EXISTS detail TEXT DEFAULT ''");
       console.log('Auto-migración de products completada');
     }
 
@@ -589,13 +590,13 @@ app.get('/api/fetch-meli', async (req, res) => {
 // POST create product
 app.post('/api/products', async (req, res) => {
   try {
-    const { name, price, original_price, discount, rating, reviews, category, sizes, colors, images, description, characteristics, meli_url, is_best_seller, show_sizes, show_colors } = req.body;
+    const { name, price, original_price, discount, rating, reviews, category, sizes, colors, images, description, detail, characteristics, meli_url, is_best_seller, show_sizes, show_colors } = req.body;
     const imagesJson = JSON.stringify(images || []);
     const firstImage = (images && images.length > 0) ? images[0] : null;
     const result = await pool.query(
-      `INSERT INTO products (name, price, original_price, discount, rating, reviews, category, sizes, colors, image, images, description, characteristics, meli_url, is_best_seller, show_sizes, show_colors)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17) RETURNING *`,
-      [name, price, original_price, discount, rating || 0, reviews || 0, category, sizes || '', colors || '', firstImage, imagesJson, description, characteristics || '', meli_url || '', is_best_seller || false, show_sizes !== false, show_colors !== false]
+      `INSERT INTO products (name, price, original_price, discount, rating, reviews, category, sizes, colors, image, images, description, detail, characteristics, meli_url, is_best_seller, show_sizes, show_colors)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18) RETURNING *`,
+      [name, price, original_price, discount, rating || 0, reviews || 0, category, sizes || '', colors || '', firstImage, imagesJson, description, detail || '', characteristics || '', meli_url || '', is_best_seller || false, show_sizes !== false, show_colors !== false]
     );
     res.status(201).json(result.rows[0]);
   } catch (err) {
@@ -608,13 +609,13 @@ app.post('/api/products', async (req, res) => {
 app.put('/api/products/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, price, original_price, discount, rating, reviews, category, sizes, colors, images, description, characteristics, meli_url, is_best_seller, show_sizes, show_colors } = req.body;
+    const { name, price, original_price, discount, rating, reviews, category, sizes, colors, images, description, detail, characteristics, meli_url, is_best_seller, show_sizes, show_colors } = req.body;
     const imagesJson = JSON.stringify(images || []);
     const firstImage = (images && images.length > 0) ? images[0] : null;
     const result = await pool.query(
-      `UPDATE products SET name=$1, price=$2, original_price=$3, discount=$4, rating=$5, reviews=$6, category=$7, sizes=$8, colors=$9, image=$10, images=$11, description=$12, characteristics=$13, meli_url=$14, is_best_seller=$15, show_sizes=$16, show_colors=$17
-       WHERE id=$18 RETURNING *`,
-      [name, price, original_price, discount, rating || 0, reviews || 0, category, sizes || '', colors || '', firstImage, imagesJson, description, characteristics || '', meli_url || '', is_best_seller || false, show_sizes !== false, show_colors !== false, id]
+      `UPDATE products SET name=$1, price=$2, original_price=$3, discount=$4, rating=$5, reviews=$6, category=$7, sizes=$8, colors=$9, image=$10, images=$11, description=$12, detail=$13, characteristics=$14, meli_url=$15, is_best_seller=$16, show_sizes=$17, show_colors=$18
+       WHERE id=$19 RETURNING *`,
+      [name, price, original_price, discount, rating || 0, reviews || 0, category, sizes || '', colors || '', firstImage, imagesJson, description, detail || '', characteristics || '', meli_url || '', is_best_seller || false, show_sizes !== false, show_colors !== false, id]
     );
     if (result.rows.length === 0) {
       return res.status(404).json({ error: 'Producto no encontrado' });

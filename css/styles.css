@@ -2243,6 +2243,14 @@ button {
   border-collapse: collapse;
 }
 
+.detail-info-text {
+  white-space: pre-wrap;
+  font-size: 0.9rem;
+  color: var(--text);
+  line-height: 1.6;
+  margin-bottom: 15px;
+}
+
 .specs-table tr {
   border-bottom: 1px solid var(--border);
 }

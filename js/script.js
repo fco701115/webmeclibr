@@ -1255,6 +1255,7 @@ function showDetail(id) {
         <p>${product.description}</p>
       </div>
       <div class="tab-content" id="tab-specs">
+        ${product.detail ? `<div class="detail-info-text">${product.detail}</div>` : ''}
         <table class="specs-table">
           <tbody>${specsHtml}</tbody>
         </table>
@@ -1429,6 +1430,7 @@ function openProductById(id) {
         is_best_seller: p.is_best_seller || false,
         meli_url: p.meli_url || '',
         characteristics: p.characteristics || '',
+        detail: p.detail || '',
         show_sizes: p.show_sizes !== false,
         show_colors: p.show_colors !== false
       });
@@ -2991,6 +2993,7 @@ function normalizeProduct(p) {
     sizes: sizes,
     colors: colors,
     description: p.description,
+    detail: p.detail || '',
     meli_url: p.meli_url || '',
     characteristics: characteristics,
     is_best_seller: p.is_best_seller || false,
@@ -3474,6 +3477,7 @@ function showAddProductModal() {
   document.getElementById('productSizes').value = '';
   document.getElementById('productColors').value = '';
   document.getElementById('productDescription').value = '';
+  document.getElementById('productDetail').value = '';
   document.getElementById('productCharacteristics').value = '';
   document.getElementById('productBestSeller').checked = false;
   document.getElementById('productShowSizes').checked = true;
@@ -3715,6 +3719,7 @@ async function editProduct(id) {
   document.getElementById('productSizes').value = product.sizes || '';
   document.getElementById('productColors').value = product.colors || '';
   document.getElementById('productDescription').value = product.description || '';
+  document.getElementById('productDetail').value = product.detail || '';
   document.getElementById('productCharacteristics').value = product.characteristics || '';
   document.getElementById('meliUrl').value = product.meli_url || '';
   document.getElementById('productBestSeller').checked = product.is_best_seller || false;
@@ -3804,6 +3809,7 @@ async function saveProduct() {
   const show_sizes = document.getElementById('productShowSizes').checked;
   const show_colors = document.getElementById('productShowColors').checked;
   const description = document.getElementById('productDescription').value.trim();
+  const detail = document.getElementById('productDetail').value.trim();
   const characteristics = document.getElementById('productCharacteristics').value.trim();
   const meli_url = document.getElementById('meliUrl').value.trim();
   const is_best_seller = document.getElementById('productBestSeller').checked;
@@ -3828,7 +3834,7 @@ async function saveProduct() {
     return;
   }
 
-  const data = { name, price, original_price, discount, rating, reviews, category, sizes, colors, images, description, characteristics, meli_url, is_best_seller, show_sizes, show_colors };
+  const data = { name, price, original_price, discount, rating, reviews, category, sizes, colors, images, description, detail, characteristics, meli_url, is_best_seller, show_sizes, show_colors };
   
   if (id) {
     await apiPut('/products/' + id, data);
