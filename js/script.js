@@ -1193,14 +1193,16 @@ function showDetail(id) {
         <ul class="detail-features">${featuresHtml}</ul>
 
         <div class="detail-options">
+          ${product.show_sizes !== false && sizesHtml ? `
           <div class="detail-option-group">
             <label>Talla:</label>
             <div class="size-options">${sizesHtml}</div>
-          </div>
+          </div>` : ''}
+          ${product.show_colors !== false && colorsHtml ? `
           <div class="detail-option-group">
             <label>Color:</label>
             <div class="color-options">${colorsHtml}</div>
-          </div>
+          </div>` : ''}
         </div>
 
         <div class="detail-qty-row">
@@ -1426,7 +1428,9 @@ function openProductById(id) {
         specs: { "Composición": "Textil", "Talla": p.sizes || '', "Peso": "0.3 kg", "Origen": "Argentina" },
         is_best_seller: p.is_best_seller || false,
         meli_url: p.meli_url || '',
-        characteristics: p.characteristics || ''
+        characteristics: p.characteristics || '',
+        show_sizes: p.show_sizes !== false,
+        show_colors: p.show_colors !== false
       });
     }
     history.pushState({ productId: p.id }, '', getProductUrl(p));
@@ -2990,6 +2994,8 @@ function normalizeProduct(p) {
     meli_url: p.meli_url || '',
     characteristics: characteristics,
     is_best_seller: p.is_best_seller || false,
+    show_sizes: p.show_sizes !== false,
+    show_colors: p.show_colors !== false,
     specs: {
       "Composición": "Textil",
       "Talla": sizes.join(', '),
@@ -3470,6 +3476,8 @@ function showAddProductModal() {
   document.getElementById('productDescription').value = '';
   document.getElementById('productCharacteristics').value = '';
   document.getElementById('productBestSeller').checked = false;
+  document.getElementById('productShowSizes').checked = true;
+  document.getElementById('productShowColors').checked = true;
   
   adminSelectedRating = 0;
   initAdminStarRating();
@@ -3710,6 +3718,8 @@ async function editProduct(id) {
   document.getElementById('productCharacteristics').value = product.characteristics || '';
   document.getElementById('meliUrl').value = product.meli_url || '';
   document.getElementById('productBestSeller').checked = product.is_best_seller || false;
+  document.getElementById('productShowSizes').checked = product.show_sizes !== false;
+  document.getElementById('productShowColors').checked = product.show_colors !== false;
   
   adminSelectedRating = parseFloat(product.rating) || 0;
   initAdminStarRating();
@@ -3791,6 +3801,8 @@ async function saveProduct() {
   const category = document.getElementById('productCategory').value;
   const sizes = document.getElementById('productSizes').value.trim();
   const colors = document.getElementById('productColors').value.trim();
+  const show_sizes = document.getElementById('productShowSizes').checked;
+  const show_colors = document.getElementById('productShowColors').checked;
   const description = document.getElementById('productDescription').value.trim();
   const characteristics = document.getElementById('productCharacteristics').value.trim();
   const meli_url = document.getElementById('meliUrl').value.trim();
@@ -3816,7 +3828,7 @@ async function saveProduct() {
     return;
   }
 
-  const data = { name, price, original_price, discount, rating, reviews, category, sizes, colors, images, description, characteristics, meli_url, is_best_seller };
+  const data = { name, price, original_price, discount, rating, reviews, category, sizes, colors, images, description, characteristics, meli_url, is_best_seller, show_sizes, show_colors };
   
   if (id) {
     await apiPut('/products/' + id, data);
