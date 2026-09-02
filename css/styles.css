@@ -5462,6 +5462,10 @@ button {
   height: 66px;
 }
 
+.admin-form-row:has(#productSizes) {
+  padding-top: 8px;
+}
+
 .admin-field-label {
   display: flex;
   align-items: center;
