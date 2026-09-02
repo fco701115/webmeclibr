@@ -1900,6 +1900,18 @@ button {
   letter-spacing: 0.5px;
 }
 
+.detail-mega-offer {
+  display: inline-block;
+  padding: 2px 3px;
+  background: #3483fa;
+  border-radius: 0;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
 .detail-name {
   font-size: 1.5rem;
   font-weight: 700;

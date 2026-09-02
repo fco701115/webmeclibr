@@ -1177,6 +1177,7 @@ function showDetail(id) {
         <div class="detail-badges">
           <span class="detail-category">${product.category}</span>
           ${product.is_best_seller ? '<span class="detail-best-seller">MAS VENDIDO</span>' : ''}
+          ${product.is_mega_offer ? '<span class="detail-mega-offer">OFERTA IMPERDIBLE</span>' : ''}
         </div>
         <h1 class="detail-name">${product.name}</h1>
         <div class="detail-price-row">
@@ -1428,6 +1429,7 @@ function openProductById(id) {
         description: p.description,
         specs: { "Composición": "Textil", "Talla": p.sizes || '', "Peso": "0.3 kg", "Origen": "Argentina" },
         is_best_seller: p.is_best_seller || false,
+        is_mega_offer: p.is_mega_offer || false,
         meli_url: p.meli_url || '',
         characteristics: p.characteristics || '',
         detail: p.detail || '',
@@ -2997,6 +2999,7 @@ function normalizeProduct(p) {
     meli_url: p.meli_url || '',
     characteristics: characteristics,
     is_best_seller: p.is_best_seller || false,
+    is_mega_offer: p.is_mega_offer || false,
     show_sizes: p.show_sizes !== false,
     show_colors: p.show_colors !== false,
     specs: {
@@ -3480,6 +3483,7 @@ function showAddProductModal() {
   document.getElementById('productDetail').value = '';
   document.getElementById('productCharacteristics').value = '';
   document.getElementById('productBestSeller').checked = false;
+  document.getElementById('productMegaOffer').checked = false;
   document.getElementById('productShowSizes').checked = true;
   document.getElementById('productShowColors').checked = true;
   
@@ -3723,6 +3727,7 @@ async function editProduct(id) {
   document.getElementById('productCharacteristics').value = product.characteristics || '';
   document.getElementById('meliUrl').value = product.meli_url || '';
   document.getElementById('productBestSeller').checked = product.is_best_seller || false;
+  document.getElementById('productMegaOffer').checked = product.is_mega_offer || false;
   document.getElementById('productShowSizes').checked = product.show_sizes !== false;
   document.getElementById('productShowColors').checked = product.show_colors !== false;
   
@@ -3813,6 +3818,7 @@ async function saveProduct() {
   const characteristics = document.getElementById('productCharacteristics').value.trim();
   const meli_url = document.getElementById('meliUrl').value.trim();
   const is_best_seller = document.getElementById('productBestSeller').checked;
+  const is_mega_offer = document.getElementById('productMegaOffer').checked;
   
   const images = [];
   for (let i = 1; i <= 5; i++) {
@@ -3834,7 +3840,7 @@ async function saveProduct() {
     return;
   }
 
-  const data = { name, price, original_price, discount, rating, reviews, category, sizes, colors, images, description, detail, characteristics, meli_url, is_best_seller, show_sizes, show_colors };
+  const data = { name, price, original_price, discount, rating, reviews, category, sizes, colors, images, description, detail, characteristics, meli_url, is_best_seller, is_mega_offer, show_sizes, show_colors };
   
   if (id) {
     await apiPut('/products/' + id, data);
