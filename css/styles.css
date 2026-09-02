@@ -1131,8 +1131,8 @@ button {
 
 .admin-star {
   position: relative;
-  width: 28px;
-  height: 28px;
+  width: 36px;
+  height: 36px;
   cursor: pointer;
 }
 
@@ -1141,7 +1141,7 @@ button {
   top: 0;
   width: 50%;
   height: 100%;
-  font-size: 1.6rem;
+  font-size: 2rem;
   color: #ccc;
   overflow: hidden;
   line-height: 1;
@@ -1181,15 +1181,28 @@ button {
 .admin-rating-inline {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
 }
 
 .admin-rating-input {
-  width: 70px;
-  padding: 6px;
+  width: 80px;
+  min-width: 80px;
+  padding: 8px 4px;
   border: 1px solid #ddd;
   border-radius: 6px;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.admin-rating-input::-webkit-inner-spin-button,
+.admin-rating-input::-webkit-outer-spin-button {
+  opacity: 1;
+  height: auto;
+}
+
+.admin-rating-input::-moz-number-spin-up,
+.admin-rating-input::-moz-number-spin-down {
+  opacity: 1;
 }
 
 .product-price {
