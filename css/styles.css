@@ -5457,6 +5457,29 @@ button {
   margin-bottom: 0;
 }
 
+.admin-option-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.admin-chip {
+  padding: 5px 12px;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  background: #f5f5f5;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.admin-chip:hover {
+  border-color: #3483fa;
+  background: #e7f0ff;
+  color: #3483fa;
+}
+
 .admin-form-row:has(#productRating) .admin-input-group:nth-child(3) {
   width: 140px;
   height: 66px;
