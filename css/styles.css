@@ -1148,14 +1148,29 @@ button {
   transition: color 0.2s ease, transform 0.15s ease;
 }
 
+.admin-star-half::after {
+  content: '★';
+  display: block;
+  width: 200%;
+  text-align: center;
+}
+
 .admin-star-left {
   left: 0;
   text-align: right;
 }
 
+.admin-star-left::after {
+  margin-left: 0;
+}
+
 .admin-star-right {
   right: 0;
   text-align: left;
+}
+
+.admin-star-right::after {
+  margin-left: -100%;
 }
 
 .admin-star-half.active {
