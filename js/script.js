@@ -1072,6 +1072,15 @@ function showDetail(id) {
   const product = products.find(p => p.id === id);
   if (!product) return;
 
+  if (!Array.isArray(product.images) || product.images.length === 0) {
+    product.images = product.image ? [product.image] : [];
+  }
+  if (!Array.isArray(product.sizes)) product.sizes = product.sizes ? product.sizes.split(',').map(s => s.trim()).filter(Boolean) : [];
+  if (!Array.isArray(product.colors)) product.colors = product.colors ? product.colors.split(',').map(c => c.trim()).filter(Boolean) : [];
+  if (!Array.isArray(product.features)) product.features = [];
+  if (!product.specs || typeof product.specs !== 'object') product.specs = {};
+  if (product.reviews == null) product.reviews = 0;
+
   currentDetailProduct = product;
   currentDetailImages = product.images;
   currentDetailMainIndex = 0;
