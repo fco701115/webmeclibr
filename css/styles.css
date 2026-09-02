@@ -1145,7 +1145,7 @@ button {
   color: #ccc;
   overflow: hidden;
   line-height: 1;
-  transition: color 0.15s;
+  transition: color 0.2s ease, transform 0.15s ease;
 }
 
 .admin-star-left {
@@ -1160,6 +1160,7 @@ button {
 
 .admin-star-half.active {
   color: #3483fa;
+  transform: scale(1.1);
 }
 
 .admin-rating-value {
