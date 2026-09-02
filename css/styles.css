@@ -1963,6 +1963,14 @@ button {
   font-size: 0.75rem;
 }
 
+.detail-features li.detail-feature-first i {
+  display: none;
+}
+
+.detail-features li.detail-feature-first {
+  padding-left: 0;
+}
+
 .detail-options {
   display: flex;
   flex-direction: column;

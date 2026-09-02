@@ -1089,7 +1089,9 @@ function showDetail(id) {
     : '';
 
   const featuresHtml = product.features
-    ? product.features.map(f => `<li><i class="fas fa-check-circle"></i> ${f}</li>`).join('')
+    ? product.features.map((f, i) => i === 0
+        ? `<li class="detail-feature-first"><i class="fas fa-check-circle"></i> ${f}</li>`
+        : `<li><i class="fas fa-check-circle"></i> ${f}</li>`).join('')
     : '';
 
   const sizesHtml = product.sizes
