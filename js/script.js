@@ -3455,19 +3455,9 @@ async function loadAdminProducts() {
   `).join('');
 }
 
-function addChipValue(inputId, value) {
-  const input = document.getElementById(inputId);
-  const current = input.value.trim();
-  const parts = current ? current.split(',').map(s => s.trim()).filter(Boolean) : [];
-  if (!parts.includes(value)) {
-    parts.push(value);
-    input.value = parts.join(', ');
-  }
-  input.focus();
-}
-
 function showAddProductModal() {
-  document.getElementById('productModalTitle').textContent = 'Agregar Producto';  document.getElementById('productId').value = '';
+  document.getElementById('productModalTitle').textContent = 'Agregar Producto';
+  document.getElementById('productId').value = '';
   document.getElementById('meliUrl').value = '';
   document.getElementById('productName').value = '';
   document.getElementById('productPrice').value = '';
