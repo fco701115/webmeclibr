@@ -19,6 +19,11 @@ CREATE TABLE IF NOT EXISTS products (
   characteristics TEXT DEFAULT '',
   meli_url TEXT DEFAULT '',
   is_best_seller BOOLEAN DEFAULT FALSE,
+  is_mega_offer BOOLEAN DEFAULT FALSE,
+  is_recommended BOOLEAN DEFAULT FALSE,
+  show_sizes BOOLEAN DEFAULT TRUE,
+  show_colors BOOLEAN DEFAULT TRUE,
+  detail TEXT DEFAULT '',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

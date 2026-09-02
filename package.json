@@ -5,6 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
+    "migrate": "node migrate.js",
     "migrate-base64": "node migrate-base64.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

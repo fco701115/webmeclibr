@@ -1,0 +1,11 @@
+-- Migration: Add product badge/detail/show columns to products table
+-- Run: psql "$DATABASE_URL" -f migrate_product_badges.sql
+
+ALTER TABLE products ADD COLUMN IF NOT EXISTS characteristics TEXT DEFAULT '';
+ALTER TABLE products ADD COLUMN IF NOT EXISTS meli_url TEXT DEFAULT '';
+ALTER TABLE products ADD COLUMN IF NOT EXISTS is_best_seller BOOLEAN DEFAULT FALSE;
+ALTER TABLE products ADD COLUMN IF NOT EXISTS is_mega_offer BOOLEAN DEFAULT FALSE;
+ALTER TABLE products ADD COLUMN IF NOT EXISTS is_recommended BOOLEAN DEFAULT FALSE;
+ALTER TABLE products ADD COLUMN IF NOT EXISTS show_sizes BOOLEAN DEFAULT TRUE;
+ALTER TABLE products ADD COLUMN IF NOT EXISTS show_colors BOOLEAN DEFAULT TRUE;
+ALTER TABLE products ADD COLUMN IF NOT EXISTS detail TEXT DEFAULT '';
