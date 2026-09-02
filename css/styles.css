@@ -1182,6 +1182,8 @@ button {
   display: flex;
   align-items: center;
   gap: 12px;
+  width: 20%;
+  max-width: 20%;
 }
 
 .admin-rating-input {
