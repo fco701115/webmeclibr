@@ -1184,6 +1184,7 @@ button {
   gap: 12px;
   width: 20%;
   max-width: 20%;
+  margin-left: auto;
 }
 
 .admin-rating-input {
