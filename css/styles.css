@@ -1912,6 +1912,18 @@ button {
   letter-spacing: 0.5px;
 }
 
+.detail-recommended {
+  display: inline-block;
+  padding: 2px 3px;
+  background: #27ae60;
+  border-radius: 0;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
 .detail-name {
   font-size: 1.5rem;
   font-weight: 700;
