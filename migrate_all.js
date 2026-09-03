@@ -40,6 +40,8 @@ const pool = new Pool(
 const files = [
   'init-db.sql',
   'migrate_missing_tables.sql',
+  'migrate_product_badges.sql',
+  'migrate_add_best_seller.sql'
 ];
 
 async function migrate() {
