@@ -1238,6 +1238,7 @@ function showDetail(id) {
             <button onclick="changeDetailQty(1)">+</button>
           </div>
           <span class="detail-total-price" id="detailTotalPrice">$${product.price.toLocaleString('es-AR', {minimumFractionDigits: 2})}</span>
+          <div id="detailFreeShippingBadge" class="detail-free-shipping" style="${product.price > 300 ? 'margin:0;' : 'display:none;margin:0;'}">Envío gratis <span class="meli-full">⚡FULL</span></div>
         </div>
 
         <div class="detail-actions">
@@ -1582,6 +1583,8 @@ function updateDetailTotalPrice() {
   if (!el || !currentDetailProduct) return;
   const total = currentDetailProduct.price * detailQty;
   el.textContent = `$${total.toLocaleString('es-AR', {minimumFractionDigits: 2})}`;
+  const badge = document.getElementById('detailFreeShippingBadge');
+  if (badge) badge.style.display = total > 300 ? '' : 'none';
 }
 
 function selectSize(btn) {
