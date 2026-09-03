@@ -1262,8 +1262,21 @@ function showDetail(id) {
         <button class="tab-btn" onclick="switchTab('reviews', this); loadProductReviews(${product.id})">Valoraciones (${product.reviews})</button>
       </div>
       <div class="tab-content active" id="tab-desc">
-        <h3>Iconic</h3>
-        <p>${product.description}</p>
+        <h3>Descripción</h3>
+        <div class="desc-content">
+          ${product.description ? product.description.split('\n').map(line => {
+            line = line.trim();
+            if (!line) return '';
+            const imgMatch = line.match(/^\[img\](.*)\[\/img\]$/i);
+            if (imgMatch) {
+              return `<img src="${imgMatch[1]}" style="max-width: 100%; border-radius: 8px; margin: 10px 0;">`;
+            }
+            if (line.match(/^https?:\/\/.*\.(jpg|jpeg|png|gif|webp)(\?.*)?$/i)) {
+              return `<img src="${line}" style="max-width: 100%; border-radius: 8px; margin: 10px 0;">`;
+            }
+            return `<p>${line}</p>`;
+          }).join('') : ''}
+        </div>
       </div>
       <div class="tab-content" id="tab-specs">
         <table class="specs-table">
