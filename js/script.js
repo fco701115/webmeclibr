@@ -1213,7 +1213,6 @@ function showDetail(id) {
           <span class="stars">${starsHtml}</span>
           <span class="rating-count">(${product.reviews})</span>
         </div>
-        ${product.is_free_shipping_full ? '<div class="detail-free-shipping">Envío gratis <span class="meli-full">⚡FULL</span></div>' : ''}
 
         <ul class="detail-features">${featuresHtml}</ul>
 
