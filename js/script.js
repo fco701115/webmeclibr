@@ -1262,7 +1262,7 @@ function showDetail(id) {
         </div>
 
         <div class="detail-info-items">
-          <div class="info-item"><i class="fas fa-truck"></i> Envío gratis y devoluciones - Disponible en pedidos superiores a $99</div>
+          <div class="info-item"><i class="fas fa-truck"></i> Envío gratis y devoluciones - Disponible en pedidos superiores a $300</div>
           <div class="info-item"><i class="fas fa-clock"></i> Entrega estimada - Los pedidos se despachan normalmente en 24 horas</div>
           <div class="info-item"><i class="fas fa-shield-alt"></i> Política de seguridad - Protección de primer nivel para tus datos y transacciones</div>
         </div>
