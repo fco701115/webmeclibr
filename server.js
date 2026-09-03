@@ -248,7 +248,8 @@ app.get('/api/products', async (req, res) => {
       if ((!images || images.length === 0) && p.image) {
         images = [p.image];
       }
-      return { ...p, images };
+      const { is_best_seller, is_mega_offer, is_recommended, ...rest } = p;
+      return { ...rest, images, is_best_seller, is_mega_offer, is_recommended };
     });
     res.json(products);
   } catch (err) {
@@ -273,7 +274,8 @@ app.get('/api/products/:id', async (req, res) => {
     if ((!images || images.length === 0) && p.image) {
       images = [p.image];
     }
-    res.json({ ...p, images });
+    const { is_best_seller, is_mega_offer, is_recommended, ...rest } = p;
+    res.json({ ...rest, images, is_best_seller, is_mega_offer, is_recommended });
   } catch (err) {
     console.error('Error fetching product:', err);
     res.status(500).json({ error: 'Error al obtener producto' });
@@ -290,7 +292,11 @@ app.get('/api/products/category/:category', async (req, res) => {
     } else {
       result = await pool.query('SELECT * FROM products WHERE category = $1 ORDER BY id', [category]);
     }
-    res.json(result.rows);
+    const products = result.rows.map(p => {
+      const { is_best_seller, is_mega_offer, is_recommended, ...rest } = p;
+      return { ...rest, is_best_seller, is_mega_offer, is_recommended };
+    });
+    res.json(products);
   } catch (err) {
     console.error('Error fetching products by category:', err);
     res.status(500).json({ error: 'Error al obtener productos' });
