@@ -3496,7 +3496,7 @@ function showAddProductModal() {
   document.getElementById('productSizes').value = '';
   document.getElementById('productColors').value = '';
   document.getElementById('productDescription').value = '';
-  document.getElementById('productDetail').value = '';
+  document.getElementById('adminProductDetail').value = '';
   document.getElementById('productCharacteristics').value = '';
   document.getElementById('productBestSeller').checked = false;
   document.getElementById('productMegaOffer').checked = false;
@@ -3740,7 +3740,7 @@ async function editProduct(id) {
   document.getElementById('productSizes').value = product.sizes || '';
   document.getElementById('productColors').value = product.colors || '';
   document.getElementById('productDescription').value = product.description || '';
-  document.getElementById('productDetail').value = product.detail || '';
+  document.getElementById('adminProductDetail').value = product.detail || '';
   document.getElementById('productCharacteristics').value = product.characteristics || '';
   document.getElementById('meliUrl').value = product.meli_url || '';
   document.getElementById('productBestSeller').checked = product.is_best_seller || false;
@@ -3832,7 +3832,7 @@ async function saveProduct() {
   const show_sizes = document.getElementById('productShowSizes').checked;
   const show_colors = document.getElementById('productShowColors').checked;
   const description = document.getElementById('productDescription').value.trim();
-  const detail = document.getElementById('productDetail').value.trim();
+  const detail = document.getElementById('adminProductDetail').value.trim();
   const characteristics = document.getElementById('productCharacteristics').value.trim();
   const meli_url = document.getElementById('meliUrl').value.trim();
   const is_best_seller = document.getElementById('productBestSeller').checked;
