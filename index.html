@@ -53,6 +53,7 @@
     <div class="navbar-inner">
       <a href="#" class="nav-link active" onclick="goHome()">Inicio</a>
       <a href="#" class="nav-link" onclick="showAllCategories(); return false">Categorías</a>
+      <a href="#" class="nav-link" onclick="showCoupons(); return false">🎟️ Cupones</a>
       <a href="#" class="nav-link" onclick="toggleLoginPanel(); return false">Mi cuenta</a>
       <a href="#" class="nav-link" onclick="showContact()">Contacto</a>
     </div>
@@ -1441,6 +1442,49 @@
       </div>
       </div>
     </section>
+  </div>
+
+  <!-- ===== COUPONS VIEW ===== -->
+  <div id="couponsView" style="display:none">
+    <div class="contact-hero">
+      <h1>🎟️ Cupones</h1>
+      <div class="contact-breadcrumb"><a href="#" onclick="goHome()">Inicio</a> / Cupones</div>
+    </div>
+    <div class="coupons-container">
+      <p class="coupons-subtitle">Copiá tu código y usalo en tu próxima compra para obtener descuentos exclusivos.</p>
+      <div class="coupons-grid" id="couponsGrid">
+        <div class="coupon-card">
+          <div class="coupon-badge">-10%</div>
+          <h3>Bienvenida</h3>
+          <p>10% OFF en tu primera compra</p>
+          <div class="coupon-code-row">
+            <span class="coupon-code">BIENVENIDA10</span>
+            <button class="coupon-copy-btn" onclick="copyCoupon('BIENVENIDA10', this)"><i class="fas fa-copy"></i> Copiar</button>
+          </div>
+          <small>Válido hasta el 31/12/2026</small>
+        </div>
+        <div class="coupon-card highlight">
+          <div class="coupon-badge">-20%</div>
+          <h3>Moda</h3>
+          <p>20% OFF en productos seleccionados</p>
+          <div class="coupon-code-row">
+            <span class="coupon-code">MODA20</span>
+            <button class="coupon-copy-btn" onclick="copyCoupon('MODA20', this)"><i class="fas fa-copy"></i> Copiar</button>
+          </div>
+          <small>Válido hasta el 31/12/2026</small>
+        </div>
+        <div class="coupon-card">
+          <div class="coupon-badge">🚚</div>
+          <h3>Envío gratis</h3>
+          <p>Envío gratis en compras mayores a $130</p>
+          <div class="coupon-code-row">
+            <span class="coupon-code">ENVIOGRATIS</span>
+            <button class="coupon-copy-btn" onclick="copyCoupon('ENVIOGRATIS', this)"><i class="fas fa-copy"></i> Copiar</button>
+          </div>
+          <small>Válido hasta el 31/12/2026</small>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- ===== CONTACT VIEW ===== -->

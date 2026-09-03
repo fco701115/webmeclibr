@@ -1511,6 +1511,10 @@ function handleRoute() {
     showContact();
     return true;
   }
+  if (path === '/cupones') {
+    showCoupons();
+    return true;
+  }
   const catMatch = path.match(/^\/categoria\/([^\/]+)\/([^\/]+)-(\d+)\/?$/);
   if (catMatch) {
     const id = parseInt(catMatch[3], 10);
@@ -1558,6 +1562,41 @@ function showContact() {
     history.pushState({}, '', '/contacto');
   }
   showView('contact');
+}
+
+function showCoupons() {
+  if (window.location.pathname !== '/cupones') {
+    history.pushState({}, '', '/cupones');
+  }
+  showView('coupons');
+}
+
+function copyCoupon(code, btn) {
+  const done = () => {
+    if (btn) {
+      const original = btn.innerHTML;
+      btn.innerHTML = '<i class="fas fa-check"></i> ¡Copiado!';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.innerHTML = original; btn.classList.remove('copied'); }, 2000);
+    }
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(code).then(done).catch(() => fallbackCopyCoupon(code, done));
+  } else {
+    fallbackCopyCoupon(code, done);
+  }
+}
+
+function fallbackCopyCoupon(code, done) {
+  const ta = document.createElement('textarea');
+  ta.value = code;
+  ta.style.position = 'fixed';
+  ta.style.opacity = '0';
+  document.body.appendChild(ta);
+  ta.select();
+  try { document.execCommand('copy'); } catch (e) {}
+  document.body.removeChild(ta);
+  if (typeof done === 'function') done();
 }
 
 function handleContactSubmit(e) {
@@ -1628,7 +1667,7 @@ function changeDetailImg(index) {
 function showView(view) {
   currentView = view;
   localStorage.setItem('currentView', view);
-  const views = ['homeView', 'detailView', 'checkoutView', 'loadingView', 'errorView', 'loginView', 'userPanelView', 'adminView', 'adminLoginView', 'categoryView', 'contactView', 'blogDetailView'];
+  const views = ['homeView', 'detailView', 'checkoutView', 'loadingView', 'errorView', 'loginView', 'userPanelView', 'adminView', 'adminLoginView', 'categoryView', 'contactView', 'couponsView', 'blogDetailView'];
   views.forEach(v => {
     const el = document.getElementById(v);
     if (el) el.style.display = 'none';
