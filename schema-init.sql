@@ -125,6 +125,20 @@ CREATE TABLE IF NOT EXISTS blog_comments (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Coupons table
+CREATE TABLE IF NOT EXISTS coupons (
+  id SERIAL PRIMARY KEY,
+  titulo VARCHAR(255) NOT NULL DEFAULT '',
+  descripcion TEXT DEFAULT '',
+  condicion TEXT DEFAULT '',
+  tope VARCHAR(255) DEFAULT '',
+  titulo_boton VARCHAR(255) DEFAULT 'Ver más',
+  link_boton TEXT DEFAULT '#',
+  vencimiento TIMESTAMPTZ,
+  active BOOLEAN DEFAULT true,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Insert sample blogs
 INSERT INTO blogs (title, excerpt, content, image, author) VALUES
 ('Tendencias de moda para esta temporada', 'Descubre las prendas imperdibles que no pueden faltar en tu guardarropa este año.', 'La moda evoluciona constantemente y esta temporada trae consigo tendencias que mezclan comodidad con estilo. Desde colores vibrantes hasta siluetas relajadas, las prendas clave incluyen blusas oversized, faldas midi plisadas y accesorios llamativos. No olvides combinar texturas y tonos neutros para crear looks versátiles y elegantes.', 'https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=800&h=500&fit=crop', 'María García'),

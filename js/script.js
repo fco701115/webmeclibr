@@ -1569,34 +1569,102 @@ function showCoupons() {
     history.pushState({}, '', '/cupones');
   }
   showView('coupons');
+  loadCoupons();
 }
 
-function copyCoupon(code, btn) {
-  const done = () => {
-    if (btn) {
-      const original = btn.innerHTML;
-      btn.innerHTML = '<i class="fas fa-check"></i> ¡Copiado!';
-      btn.classList.add('copied');
-      setTimeout(() => { btn.innerHTML = original; btn.classList.remove('copied'); }, 2000);
-    }
-  };
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(code).then(done).catch(() => fallbackCopyCoupon(code, done));
-  } else {
-    fallbackCopyCoupon(code, done);
+let allCouponsPublic = [];
+let couponsTimer = null;
+
+function formatVencimiento(dateStr) {
+  if (!dateStr) return '';
+  const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return '';
+  const day = d.getDate();
+  const months = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  return `🕒 Vence ${day} de ${months[d.getMonth()]}`;
+}
+
+function couponTimeLeft(dateStr) {
+  if (!dateStr) return null;
+  const diff = new Date(dateStr).getTime() - Date.now();
+  if (isNaN(diff)) return null;
+  return diff;
+}
+
+function formatCountdown(ms) {
+  if (ms <= 0) return null;
+  const totalSec = Math.floor(ms / 1000);
+  const d = Math.floor(totalSec / 86400);
+  const h = Math.floor((totalSec % 86400) / 3600);
+  const m = Math.floor((totalSec % 3600) / 60);
+  const s = totalSec % 60;
+  const pad = (n) => String(n).padStart(2, '0');
+  if (d > 0) return `${d}d ${pad(h)}:${pad(m)}:${pad(s)}`;
+  return `${pad(h)}:${pad(m)}:${pad(s)}`;
+}
+
+async function loadCoupons() {
+  const grid = document.getElementById('couponsGrid');
+  if (grid && (!grid.dataset.loaded || grid.children.length === 0)) {
+    grid.innerHTML = '<p class="coupons-loading">Cargando cupones...</p>';
   }
+  const data = await apiGet('/coupons');
+  allCouponsPublic = Array.isArray(data) ? data.filter(c => c.active !== false) : [];
+  renderCoupons();
+  startCouponsTimer();
 }
 
-function fallbackCopyCoupon(code, done) {
-  const ta = document.createElement('textarea');
-  ta.value = code;
-  ta.style.position = 'fixed';
-  ta.style.opacity = '0';
-  document.body.appendChild(ta);
-  ta.select();
-  try { document.execCommand('copy'); } catch (e) {}
-  document.body.removeChild(ta);
-  if (typeof done === 'function') done();
+function renderCoupons() {
+  const grid = document.getElementById('couponsGrid');
+  if (!grid) return;
+  grid.dataset.loaded = '1';
+  if (!allCouponsPublic || allCouponsPublic.length === 0) {
+    grid.innerHTML = '<div class="coupons-empty"><i class="fas fa-ticket-alt"></i><p>No hay cupones disponibles por el momento.</p></div>';
+    return;
+  }
+  grid.innerHTML = allCouponsPublic.map(c => {
+    const ms = couponTimeLeft(c.vencimiento);
+    const expired = c.vencimiento ? ms <= 0 : false;
+    const venceLabel = c.vencimiento ? formatVencimiento(c.vencimiento) : '';
+    const countdown = (!expired && c.vencimiento) ? formatCountdown(ms) : null;
+    const btnTitle = (c.titulo_boton || 'Ver más').trim() || 'Ver más';
+    const btnLink = (c.link_boton || '#').trim() || '#';
+    return `
+    <div class="coupon-card ${expired ? 'expired' : ''}">
+      <div class="coupon-ticket-icon">🎟️</div>
+      <h3>${escapeHtml(c.titulo || 'Cupón')}</h3>
+      ${c.descripcion ? `<p class="coupon-desc">${escapeHtml(c.descripcion)}</p>` : ''}
+      ${c.condicion ? `<p class="coupon-cond"><i class="fas fa-info-circle"></i> ${escapeHtml(c.condicion)}</p>` : ''}
+      ${c.tope ? `<p class="coupon-tope"><i class="fas fa-arrow-down"></i> Tope: ${escapeHtml(c.tope)}</p>` : ''}
+      ${c.vencimiento ? `
+        <div class="coupon-expiry ${expired ? 'is-expired' : ''}">
+          ${expired
+            ? '<span class="coupon-expired-label">Vencido</span>'
+            : `<span class="coupon-vence">${escapeHtml(venceLabel)}</span>
+               <span class="coupon-countdown" data-vencimiento="${escapeHtml(c.vencimiento)}">${countdown || ''}</span>`}
+        </div>` : ''}
+      ${expired
+        ? `<span class="coupon-btn disabled">Vencido</span>`
+        : `<a class="coupon-btn" href="${escapeHtml(btnLink)}" target="_blank" rel="noopener">${escapeHtml(btnTitle)}</a>`}
+    </div>`;
+  }).join('');
+}
+
+function startCouponsTimer() {
+  if (couponsTimer) clearInterval(couponsTimer);
+  couponsTimer = setInterval(() => {
+    let needsRerender = false;
+    document.querySelectorAll('.coupon-countdown[data-vencimiento]').forEach(el => {
+      const ms = couponTimeLeft(el.getAttribute('data-vencimiento'));
+      if (ms === null) return;
+      if (ms <= 0) {
+        needsRerender = true;
+      } else {
+        el.textContent = formatCountdown(ms);
+      }
+    });
+    if (needsRerender) renderCoupons();
+  }, 1000);
 }
 
 function handleContactSubmit(e) {
@@ -3286,23 +3354,137 @@ function showAdminSection(section, el) {
   else if (section === 'categories') loadAdminCategories();
   else if (section === 'slides') loadAdminSlides();
   else if (section === 'splitBanners') loadAdminSplitBanners();
-  else if (section === 'orders') loadAdminOrders();
+  else if (section === 'coupons') loadAdminCoupons();
   else if (section === 'users') loadAdminUsers();
   else if (section === 'reviews') loadAdminReviews();
   else if (section === 'blogs') loadAdminBlogs();
 }
 
 async function loadAdminDashboard() {
-  const [products, orders, users] = await Promise.all([
+  const [products, orders, users, coupons] = await Promise.all([
     apiGet('/products'),
     apiGet('/orders'),
-    apiGet('/users')
+    apiGet('/users'),
+    apiGet('/coupons')
   ]);
   document.getElementById('statProducts').textContent = products?.length || 0;
-  document.getElementById('statOrders').textContent = orders?.length || 0;
+  const statCoupons = document.getElementById('statCoupons');
+  if (statCoupons) statCoupons.textContent = coupons?.length || 0;
   document.getElementById('statUsers').textContent = users?.length || 0;
   const revenue = (orders || []).reduce((sum, o) => sum + (parseFloat(o.total) || 0), 0);
   document.getElementById('statRevenue').textContent = '$' + revenue.toLocaleString('es-AR');
+}
+
+// ========== COUPONS (ADMIN) ==========
+let allAdminCoupons = [];
+
+async function loadAdminCoupons() {
+  const data = await apiGet('/coupons');
+  allAdminCoupons = Array.isArray(data) ? data : [];
+  const tbody = document.getElementById('adminCouponsTable');
+  const emptyMsg = document.getElementById('noCouponsMsg');
+  if (!tbody) return;
+  if (!allAdminCoupons.length) {
+    tbody.innerHTML = '';
+    if (emptyMsg) emptyMsg.style.display = 'block';
+    return;
+  }
+  if (emptyMsg) emptyMsg.style.display = 'none';
+  tbody.innerHTML = allAdminCoupons.map(c => {
+    const expired = c.vencimiento ? (new Date(c.vencimiento).getTime() <= Date.now()) : false;
+    const venceTxt = c.vencimiento ? new Date(c.vencimiento).toLocaleDateString('es-AR') : '-';
+    return `
+    <tr>
+      <td>${c.id}</td>
+      <td>${escapeHtml(c.titulo || '')}</td>
+      <td>${escapeHtml((c.descripcion || '').slice(0, 60))}${(c.descripcion || '').length > 60 ? '...' : ''}</td>
+      <td>${escapeHtml(c.condicion || '-')}</td>
+      <td>${escapeHtml(c.tope || '-')}</td>
+      <td>${escapeHtml(venceTxt)}${expired ? ' <span style="color:#e74c3c;font-weight:700">Vencido</span>' : ''}</td>
+      <td>${c.active ? '<span style="color:#27ae60">Sí</span>' : '<span style="color:#e74c3c">No</span>'}</td>
+      <td>
+        <button class="admin-action-btn edit" onclick="editCouponById(${c.id})"><i class="fas fa-edit"></i></button>
+        <button class="admin-action-btn delete" onclick="deleteCoupon(${c.id})"><i class="fas fa-trash"></i></button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function toDatetimeLocalValue(dateStr) {
+  if (!dateStr) return '';
+  const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return '';
+  const pad = (n) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+function showCouponModal() {
+  document.getElementById('couponId').value = '';
+  document.getElementById('couponTitulo').value = '';
+  document.getElementById('couponDescripcion').value = '';
+  document.getElementById('couponCondicion').value = '';
+  document.getElementById('couponTope').value = '';
+  document.getElementById('couponTituloBoton').value = '';
+  document.getElementById('couponLinkBoton').value = '';
+  document.getElementById('couponVencimiento').value = '';
+  document.getElementById('couponActive').value = 'true';
+  document.getElementById('couponModalTitle').textContent = 'Cargar cupón';
+  document.getElementById('couponModal').style.display = 'flex';
+}
+
+function closeCouponModal() {
+  document.getElementById('couponModal').style.display = 'none';
+}
+
+function editCouponById(id) {
+  const c = allAdminCoupons.find(x => x.id === id);
+  if (!c) return;
+  document.getElementById('couponId').value = c.id;
+  document.getElementById('couponTitulo').value = c.titulo || '';
+  document.getElementById('couponDescripcion').value = c.descripcion || '';
+  document.getElementById('couponCondicion').value = c.condicion || '';
+  document.getElementById('couponTope').value = c.tope || '';
+  document.getElementById('couponTituloBoton').value = c.titulo_boton || '';
+  document.getElementById('couponLinkBoton').value = c.link_boton || '';
+  document.getElementById('couponVencimiento').value = toDatetimeLocalValue(c.vencimiento);
+  document.getElementById('couponActive').value = c.active ? 'true' : 'false';
+  document.getElementById('couponModalTitle').textContent = 'Editar cupón';
+  document.getElementById('couponModal').style.display = 'flex';
+}
+
+async function saveCoupon() {
+  const id = document.getElementById('couponId').value;
+  const titulo = document.getElementById('couponTitulo').value.trim();
+  const descripcion = document.getElementById('couponDescripcion').value.trim();
+  const condicion = document.getElementById('couponCondicion').value.trim();
+  const tope = document.getElementById('couponTope').value.trim();
+  const titulo_boton = document.getElementById('couponTituloBoton').value.trim();
+  const link_boton = document.getElementById('couponLinkBoton').value.trim();
+  const vencimientoRaw = document.getElementById('couponVencimiento').value;
+  const active = document.getElementById('couponActive').value === 'true';
+
+  if (!titulo) { alert('El título es requerido'); return; }
+  if (!vencimientoRaw) { alert('El vencimiento es requerido'); return; }
+  const vencimiento = new Date(vencimientoRaw).toISOString();
+
+  const payload = { titulo, descripcion, condicion, tope, titulo_boton, link_boton, vencimiento, active };
+  let result;
+  if (id) {
+    result = await apiPut('/coupons/' + id, payload);
+  } else {
+    result = await apiPost('/coupons', payload);
+  }
+  if (result && result.error) { alert(result.error); return; }
+  closeCouponModal();
+  loadAdminCoupons();
+  loadAdminDashboard();
+}
+
+async function deleteCoupon(id) {
+  if (!confirm('¿Eliminar este cupón?')) return;
+  await apiDelete('/coupons/' + id);
+  loadAdminCoupons();
+  loadAdminDashboard();
 }
 
 async function deleteProduct(id) {
@@ -3315,6 +3497,7 @@ async function loadAdminOrders() {
   const orders = await apiGet('/orders');
   const tbody = document.getElementById('adminOrdersTable');
   const noOrders = document.getElementById('noOrdersMsg');
+  if (!tbody) return;
   if (!orders || orders.length === 0) {
     tbody.innerHTML = '';
     noOrders.style.display = 'block';

@@ -111,6 +111,20 @@ CREATE TABLE users (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Coupons table
+CREATE TABLE coupons (
+  id SERIAL PRIMARY KEY,
+  titulo VARCHAR(255) NOT NULL DEFAULT '',
+  descripcion TEXT DEFAULT '',
+  condicion TEXT DEFAULT '',
+  tope VARCHAR(255) DEFAULT '',
+  titulo_boton VARCHAR(255) DEFAULT 'Ver más',
+  link_boton TEXT DEFAULT '#',
+  vencimiento TIMESTAMPTZ,
+  active BOOLEAN DEFAULT true,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Insert sample products
 INSERT INTO products (name, price, original_price, discount, rating, reviews, category, image, description) VALUES
 ('Blusa para dama color gris', 1799.99, 2499.99, 28, 4.8, 124, 'Blusas', 'https://images.unsplash.com/photo-1564257631407-4deb1f99d992?w=600&h=750&fit=crop', 'Blusa elegante para dama en color gris.'),

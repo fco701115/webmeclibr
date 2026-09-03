@@ -55,6 +55,10 @@ app.get('/contacto', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
+app.get('/cupones', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
+
 app.get('/categoria/:slug', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
@@ -205,6 +209,31 @@ async function autoMigrate() {
     // Clear cache after migration
     Object.keys(cache).forEach(k => delete cache[k]);
     console.log('Caché limpiado después de auto-migración');
+
+    // Create coupons table if it doesn't exist
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS coupons (
+        id SERIAL PRIMARY KEY,
+        titulo VARCHAR(255) NOT NULL DEFAULT '',
+        descripcion TEXT DEFAULT '',
+        condicion TEXT DEFAULT '',
+        tope VARCHAR(255) DEFAULT '',
+        titulo_boton VARCHAR(255) DEFAULT 'Ver más',
+        link_boton TEXT DEFAULT '#',
+        vencimiento TIMESTAMPTZ,
+        active BOOLEAN DEFAULT true,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+    await pool.query('ALTER TABLE coupons ADD COLUMN IF NOT EXISTS titulo VARCHAR(255)');
+    await pool.query('ALTER TABLE coupons ADD COLUMN IF NOT EXISTS descripcion TEXT');
+    await pool.query('ALTER TABLE coupons ADD COLUMN IF NOT EXISTS condicion TEXT');
+    await pool.query('ALTER TABLE coupons ADD COLUMN IF NOT EXISTS tope VARCHAR(255)');
+    await pool.query('ALTER TABLE coupons ADD COLUMN IF NOT EXISTS titulo_boton VARCHAR(255)');
+    await pool.query('ALTER TABLE coupons ADD COLUMN IF NOT EXISTS link_boton TEXT');
+    await pool.query('ALTER TABLE coupons ADD COLUMN IF NOT EXISTS vencimiento TIMESTAMPTZ');
+    await pool.query('ALTER TABLE coupons ADD COLUMN IF NOT EXISTS active BOOLEAN DEFAULT true');
+    console.log('Auto-migración de coupons completada');
   } catch (err) {
     console.error('Error en auto-migración:', err.message);
   }
@@ -1016,6 +1045,91 @@ app.get('/api/debug/tables/:name', async (req, res) => {
   } catch (err) {
     console.error('Error fetching table:', err);
     res.status(500).json({ error: 'Error al obtener estructura de tabla' });
+  }
+});
+
+// ========== COUPONS ==========
+
+// GET all coupons (public + admin)
+app.get('/api/coupons', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM coupons ORDER BY vencimiento ASC NULLS LAST, created_at DESC');
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Error fetching coupons:', err);
+    res.status(500).json({ error: 'Error al obtener cupones' });
+  }
+});
+
+// POST create coupon
+app.post('/api/coupons', async (req, res) => {
+  try {
+    const { titulo, descripcion, condicion, tope, titulo_boton, link_boton, vencimiento, active } = req.body;
+    if (!titulo || !String(titulo).trim()) return res.status(400).json({ error: 'El título es requerido' });
+    const result = await pool.query(
+      `INSERT INTO coupons (titulo, descripcion, condicion, tope, titulo_boton, link_boton, vencimiento, active)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`,
+      [
+        String(titulo).trim(),
+        descripcion || '',
+        condicion || '',
+        tope || '',
+        titulo_boton || 'Ver más',
+        link_boton || '#',
+        vencimiento || null,
+        active !== false
+      ]
+    );
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    console.error('Error creating coupon:', err);
+    res.status(500).json({ error: 'Error al crear cupón' });
+  }
+});
+
+// PUT update coupon
+app.put('/api/coupons/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { titulo, descripcion, condicion, tope, titulo_boton, link_boton, vencimiento, active } = req.body;
+    if (!titulo || !String(titulo).trim()) return res.status(400).json({ error: 'El título es requerido' });
+    const result = await pool.query(
+      `UPDATE coupons SET titulo=$1, descripcion=$2, condicion=$3, tope=$4, titulo_boton=$5, link_boton=$6, vencimiento=$7, active=$8
+       WHERE id=$9 RETURNING *`,
+      [
+        String(titulo).trim(),
+        descripcion || '',
+        condicion || '',
+        tope || '',
+        titulo_boton || 'Ver más',
+        link_boton || '#',
+        vencimiento || null,
+        active !== false,
+        id
+      ]
+    );
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Cupón no encontrado' });
+    }
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error('Error updating coupon:', err);
+    res.status(500).json({ error: 'Error al actualizar cupón' });
+  }
+});
+
+// DELETE coupon
+app.delete('/api/coupons/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await pool.query('DELETE FROM coupons WHERE id = $1 RETURNING *', [id]);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Cupón no encontrado' });
+    }
+    res.json({ message: 'Cupón eliminado', coupon: result.rows[0] });
+  } catch (err) {
+    console.error('Error deleting coupon:', err);
+    res.status(500).json({ error: 'Error al eliminar cupón' });
   }
 });
 

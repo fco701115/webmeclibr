@@ -7544,24 +7544,20 @@ button {
   padding: 24px 20px;
   text-align: center;
   position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
-.coupon-card.highlight {
-  border-style: solid;
-  border-color: #ffc000;
-  background: #fffdf0;
-  box-shadow: 0 4px 16px rgba(255, 192, 0, 0.25);
+.coupon-card.expired {
+  border-color: #ddd;
+  background: #f7f7f7;
+  opacity: 0.85;
 }
 
-.coupon-badge {
-  display: inline-block;
-  background: #ffc000;
-  color: #151414;
-  font-weight: 800;
-  font-size: 1.1rem;
-  padding: 6px 18px;
-  border-radius: 20px;
-  margin-bottom: 12px;
+.coupon-ticket-icon {
+  font-size: 2rem;
+  line-height: 1;
 }
 
 .coupon-card h3 {
@@ -7574,50 +7570,91 @@ button {
 .coupon-card p {
   color: var(--text-light);
   font-size: 0.9rem;
-  margin-bottom: 16px;
+  margin-bottom: 4px;
 }
 
-.coupon-code-row {
+.coupon-desc {
+  font-size: 0.92rem;
+}
+
+.coupon-cond,
+.coupon-tope {
+  font-size: 0.82rem;
+  background: #f8f8f8;
+  border-radius: 8px;
+  padding: 6px 10px;
+}
+
+.coupon-expiry {
   display: flex;
+  flex-direction: column;
+  gap: 4px;
   align-items: center;
-  justify-content: center;
-  gap: 10px;
-  margin-bottom: 10px;
-  flex-wrap: wrap;
-}
-
-.coupon-code {
-  background: #f5f5f5;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 8px 16px;
-  font-family: monospace;
-  font-weight: 700;
-  letter-spacing: 1px;
-  font-size: 0.95rem;
-}
-
-.coupon-copy-btn {
-  background: #151414;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  padding: 8px 16px;
+  margin: 8px 0;
   font-size: 0.85rem;
   font-weight: 600;
-  cursor: pointer;
+}
+
+.coupon-vence {
+  color: #b77900;
+}
+
+.coupon-countdown {
+  font-family: monospace;
+  background: #151414;
+  color: #ffe600;
+  border-radius: 8px;
+  padding: 4px 12px;
+  font-size: 0.9rem;
+  letter-spacing: 1px;
+}
+
+.coupon-expiry.is-expired .coupon-countdown {
+  display: none;
+}
+
+.coupon-expired-label {
+  background: #e74c3c;
+  color: #fff;
+  border-radius: 20px;
+  padding: 4px 16px;
+  font-weight: 800;
+  font-size: 0.85rem;
+}
+
+.coupon-btn {
+  display: inline-block;
+  margin-top: 8px;
+  background: #ffc000;
+  color: #151414;
+  font-weight: 700;
+  border-radius: 8px;
+  padding: 10px 22px;
+  text-decoration: none;
   transition: background var(--transition);
 }
 
-.coupon-copy-btn:hover {
-  background: #333;
+.coupon-btn:hover {
+  background: #e6ad00;
 }
 
-.coupon-copy-btn.copied {
-  background: #27ae60;
+.coupon-btn.disabled {
+  background: #ccc;
+  color: #666;
+  cursor: not-allowed;
+  pointer-events: none;
 }
 
-.coupon-card small {
+.coupons-loading,
+.coupons-empty {
+  grid-column: 1 / -1;
+  text-align: center;
   color: var(--text-light);
-  font-size: 0.78rem;
+  padding: 40px 20px;
+}
+
+.coupons-empty i {
+  font-size: 2.5rem;
+  margin-bottom: 12px;
+  color: #ffc000;
 }

@@ -390,8 +390,8 @@
           <a href="#" class="admin-nav-item" onclick="showAdminSection('splitBanners', this)">
             <i class="fas fa-columns"></i> Banners Split
           </a>
-          <a href="#" class="admin-nav-item" onclick="showAdminSection('orders', this)">
-            <i class="fas fa-shopping-bag"></i> Pedidos
+          <a href="#" class="admin-nav-item" onclick="showAdminSection('coupons', this)">
+            <i class="fas fa-ticket-alt"></i> 🎟️ Cupones
           </a>
           <a href="#" class="admin-nav-item" onclick="showAdminSection('users', this)">
             <i class="fas fa-users"></i> Usuarios
@@ -421,11 +421,11 @@
                 <p>Productos</p>
               </div>
             </div>
-            <div class="admin-stat-card" style="cursor:pointer" onclick="showAdminSection('orders', document.querySelector('.admin-nav-item[onclick*=orders]'))">
-              <div class="admin-stat-icon orders"><i class="fas fa-shopping-bag"></i></div>
+            <div class="admin-stat-card" style="cursor:pointer" onclick="showAdminSection('coupons', document.querySelector('.admin-nav-item[onclick*=coupons]'))">
+              <div class="admin-stat-icon orders"><i class="fas fa-ticket-alt"></i></div>
               <div class="admin-stat-info">
-                <h3 id="statOrders">0</h3>
-                <p>Pedidos</p>
+                <h3 id="statCoupons">0</h3>
+                <p>Cupones</p>
               </div>
             </div>
             <div class="admin-stat-card" style="cursor:pointer" onclick="showAdminSection('users', document.querySelector('.admin-nav-item[onclick*=users]'))">
@@ -435,7 +435,7 @@
                 <p>Usuarios</p>
               </div>
             </div>
-            <div class="admin-stat-card" style="cursor:pointer" onclick="showAdminSection('orders', document.querySelector('.admin-nav-item[onclick*=orders]'))">
+            <div class="admin-stat-card">
               <div class="admin-stat-icon revenue"><i class="fas fa-dollar-sign"></i></div>
               <div class="admin-stat-info">
                 <h3 id="statRevenue">$0</h3>
@@ -554,25 +554,32 @@
           </div>
         </div>
 
-        <!-- Orders -->
-        <div class="admin-section" id="adminOrders" style="display: none;">
-          <h2>Gestión de pedidos</h2>
+        <!-- Coupons -->
+        <div class="admin-section" id="adminCoupons" style="display: none;">
+          <div class="admin-section-header">
+            <h2>🎟️ Cupones</h2>
+            <button class="admin-add-btn" onclick="showCouponModal()">
+              <i class="fas fa-plus"></i> Cargar cupones
+            </button>
+          </div>
           <div class="admin-table-container">
             <table class="admin-table">
               <thead>
                 <tr>
-                  <th>PEDIDO</th>
-                  <th>CLIENTE</th>
-                  <th>FECHA</th>
-                  <th>TOTAL</th>
-                  <th>ESTADO</th>
-                  <th>ACCIÓN</th>
+                  <th>ID</th>
+                  <th>Título</th>
+                  <th>Descripción</th>
+                  <th>Condición</th>
+                  <th>Tope</th>
+                  <th>Vencimiento</th>
+                  <th>Estado</th>
+                  <th>Acciones</th>
                 </tr>
               </thead>
-              <tbody id="adminOrdersTable"></tbody>
+              <tbody id="adminCouponsTable"></tbody>
             </table>
           </div>
-          <p class="admin-empty-text" id="noOrdersMsg">No hay pedidos aún.</p>
+          <p class="admin-empty-text" id="noCouponsMsg" style="display:none">No hay cupones cargados aún.</p>
         </div>
 
         <!-- Users -->
@@ -964,6 +971,64 @@
         <div class="admin-modal-footer">
           <button class="admin-modal-cancel" onclick="closeSplitBannerModal()">Cancelar</button>
           <button class="admin-modal-save" onclick="saveSplitBanner()">Guardar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Coupon Modal -->
+    <div class="admin-modal" id="couponModal" style="display: none;">
+      <div class="admin-modal-content admin-modal-lg">
+        <div class="admin-modal-header">
+          <h3 id="couponModalTitle">Cargar cupón</h3>
+          <button class="admin-modal-close" onclick="closeCouponModal()">&times;</button>
+        </div>
+        <div class="admin-modal-body">
+          <input type="hidden" id="couponId">
+          <div class="admin-input-group">
+            <label>Título *</label>
+            <input type="text" id="couponTitulo" placeholder="Ej: 20% OFF en Otoño">
+          </div>
+          <div class="admin-input-group">
+            <label>Descripción</label>
+            <textarea id="couponDescripcion" rows="2" placeholder="Descripción del cupón"></textarea>
+          </div>
+          <div class="admin-form-row">
+            <div class="admin-input-group">
+              <label>Condición</label>
+              <input type="text" id="couponCondicion" placeholder="Ej: Compra mínima $5000">
+            </div>
+            <div class="admin-input-group">
+              <label>Tope</label>
+              <input type="text" id="couponTope" placeholder="Ej: Tope $2000">
+            </div>
+          </div>
+          <div class="admin-form-row">
+            <div class="admin-input-group">
+              <label>Título del botón</label>
+              <input type="text" id="couponTituloBoton" placeholder="Ej: Quiero mi cupón">
+            </div>
+            <div class="admin-input-group">
+              <label>Link del botón</label>
+              <input type="text" id="couponLinkBoton" placeholder="https://...">
+            </div>
+          </div>
+          <div class="admin-form-row">
+            <div class="admin-input-group">
+              <label>Vencimiento *</label>
+              <input type="datetime-local" id="couponVencimiento">
+            </div>
+            <div class="admin-input-group">
+              <label>Activo</label>
+              <select id="couponActive">
+                <option value="true">Sí</option>
+                <option value="false">No</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="admin-modal-footer">
+          <button class="admin-modal-cancel" onclick="closeCouponModal()">Cancelar</button>
+          <button class="admin-modal-save" onclick="saveCoupon()">Guardar</button>
         </div>
       </div>
     </div>
@@ -1451,38 +1516,9 @@
       <div class="contact-breadcrumb"><a href="#" onclick="goHome()">Inicio</a> / Cupones</div>
     </div>
     <div class="coupons-container">
-      <p class="coupons-subtitle">Copiá tu código y usalo en tu próxima compra para obtener descuentos exclusivos.</p>
+      <p class="coupons-subtitle">Aprovechá estos cupones exclusivos antes de que venzan.</p>
       <div class="coupons-grid" id="couponsGrid">
-        <div class="coupon-card">
-          <div class="coupon-badge">-10%</div>
-          <h3>Bienvenida</h3>
-          <p>10% OFF en tu primera compra</p>
-          <div class="coupon-code-row">
-            <span class="coupon-code">BIENVENIDA10</span>
-            <button class="coupon-copy-btn" onclick="copyCoupon('BIENVENIDA10', this)"><i class="fas fa-copy"></i> Copiar</button>
-          </div>
-          <small>Válido hasta el 31/12/2026</small>
-        </div>
-        <div class="coupon-card highlight">
-          <div class="coupon-badge">-20%</div>
-          <h3>Moda</h3>
-          <p>20% OFF en productos seleccionados</p>
-          <div class="coupon-code-row">
-            <span class="coupon-code">MODA20</span>
-            <button class="coupon-copy-btn" onclick="copyCoupon('MODA20', this)"><i class="fas fa-copy"></i> Copiar</button>
-          </div>
-          <small>Válido hasta el 31/12/2026</small>
-        </div>
-        <div class="coupon-card">
-          <div class="coupon-badge">🚚</div>
-          <h3>Envío gratis</h3>
-          <p>Envío gratis en compras mayores a $130</p>
-          <div class="coupon-code-row">
-            <span class="coupon-code">ENVIOGRATIS</span>
-            <button class="coupon-copy-btn" onclick="copyCoupon('ENVIOGRATIS', this)"><i class="fas fa-copy"></i> Copiar</button>
-          </div>
-          <small>Válido hasta el 31/12/2026</small>
-        </div>
+        <p class="coupons-loading">Cargando cupones...</p>
       </div>
     </div>
   </div>
