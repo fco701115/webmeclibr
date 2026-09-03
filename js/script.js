@@ -1266,9 +1266,21 @@ function showDetail(id) {
         <p>${product.description}</p>
       </div>
       <div class="tab-content" id="tab-specs">
-        ${product.detail ? `<div class="detail-info-text">${product.detail}</div>` : ''}
         <table class="specs-table">
-          <tbody>${specsHtml}</tbody>
+          <tbody>
+            ${product.detail ? product.detail.split('\n').map(line => {
+              line = line.trim();
+              if (!line) return '';
+              const colonIndex = line.indexOf(':');
+              if (colonIndex !== -1) {
+                const key = line.substring(0, colonIndex).trim();
+                const value = line.substring(colonIndex + 1).trim();
+                return `<tr><td>${key}</td><td>${value}</td></tr>`;
+              }
+              return `<tr><td colspan="2">${line}</td></tr>`;
+            }).join('') : ''}
+            ${specsHtml}
+          </tbody>
         </table>
       </div>
       <div class="tab-content" id="tab-reviews">
