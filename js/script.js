@@ -492,6 +492,7 @@ function productCardHtml(p) {
             <span class="price-current">$${p.price.toLocaleString('es-AR', {minimumFractionDigits: 2})}</span>
             ${originalPriceHtml}
           </div>
+          ${p.is_free_shipping_full ? '<div class="meli-free-shipping">Envío gratis <span class="meli-full">⚡FULL</span></div>' : ''}
           <a href="${p.meli_url || '#'}" target="_blank" class="ml-buy-btn" onclick="event.stopPropagation();">Comprar en Mercado Libre</a>
         </div>
       </div>
@@ -1150,6 +1151,7 @@ function showDetail(id) {
               <span class="price-current">$${p.price.toLocaleString('es-AR', {minimumFractionDigits: 2})}</span>
               ${origPriceHtml}
             </div>
+            ${p.is_free_shipping_full ? '<div class="meli-free-shipping">Envío gratis <span class="meli-full">⚡FULL</span></div>' : ''}
             <a href="${p.meli_url || '#'}" target="_blank" class="ml-buy-btn" onclick="event.stopPropagation();">Comprar en Mercado Libre</a>
           </div>
         </div>
@@ -1200,6 +1202,7 @@ function showDetail(id) {
           <span class="stars">${starsHtml}</span>
           <span class="rating-count">(${product.reviews})</span>
         </div>
+        ${product.is_free_shipping_full ? '<div class="detail-free-shipping">Envío gratis <span class="meli-full">⚡FULL</span></div>' : ''}
 
         <ul class="detail-features">${featuresHtml}</ul>
 
@@ -1466,6 +1469,7 @@ function openProductById(id) {
         is_best_seller: p.is_best_seller || false,
         is_mega_offer: p.is_mega_offer || false,
         is_recommended: p.is_recommended || false,
+        is_free_shipping_full: p.is_free_shipping_full || false,
         meli_url: p.meli_url || '',
         characteristics: p.characteristics || '',
         detail: p.detail || '',
@@ -2792,6 +2796,7 @@ function initSearch() {
             <span class="price-current">$${p.price.toLocaleString('es-AR', {minimumFractionDigits: 2})}</span>
             ${originalPriceHtml}
             </div>
+            ${p.is_free_shipping_full ? '<div class="meli-free-shipping">Envío gratis <span class="meli-full">⚡FULL</span></div>' : ''}
             <a href="${p.meli_url || '#'}" target="_blank" class="ml-buy-btn" onclick="event.stopPropagation();">Comprar en Mercado Libre</a>
           </div>
         </div>
@@ -3041,6 +3046,7 @@ function normalizeProduct(p) {
     is_best_seller: p.is_best_seller || false,
     is_mega_offer: p.is_mega_offer || false,
     is_recommended: p.is_recommended || false,
+    is_free_shipping_full: p.is_free_shipping_full || false,
     show_sizes: p.show_sizes !== false,
     show_colors: p.show_colors !== false,
     specs: {
@@ -3526,6 +3532,7 @@ function showAddProductModal() {
   document.getElementById('productBestSeller').checked = false;
   document.getElementById('productMegaOffer').checked = false;
   document.getElementById('productRecommended').checked = false;
+  document.getElementById('productFreeShippingFull').checked = false;
   document.getElementById('productShowSizes').checked = true;
   document.getElementById('productShowColors').checked = true;
   
@@ -3771,6 +3778,7 @@ async function editProduct(id) {
   document.getElementById('productBestSeller').checked = product.is_best_seller || false;
   document.getElementById('productMegaOffer').checked = product.is_mega_offer || false;
   document.getElementById('productRecommended').checked = product.is_recommended || false;
+  document.getElementById('productFreeShippingFull').checked = product.is_free_shipping_full || false;
   document.getElementById('productShowSizes').checked = product.show_sizes !== false;
   document.getElementById('productShowColors').checked = product.show_colors !== false;
   
@@ -3863,6 +3871,7 @@ async function saveProduct() {
   const is_best_seller = document.getElementById('productBestSeller').checked;
   const is_mega_offer = document.getElementById('productMegaOffer').checked;
   const is_recommended = document.getElementById('productRecommended').checked;
+  const is_free_shipping_full = document.getElementById('productFreeShippingFull').checked;
   
   const images = [];
   for (let i = 1; i <= 5; i++) {
@@ -3884,7 +3893,7 @@ async function saveProduct() {
     return;
   }
 
-  const data = { name, price, original_price, discount, rating, reviews, category, sizes, colors, images, description, detail, characteristics, meli_url, is_best_seller, is_mega_offer, is_recommended, show_sizes, show_colors };
+  const data = { name, price, original_price, discount, rating, reviews, category, sizes, colors, images, description, detail, characteristics, meli_url, is_best_seller, is_mega_offer, is_recommended, is_free_shipping_full, show_sizes, show_colors };
   
   if (id) {
     await apiPut('/products/' + id, data);
