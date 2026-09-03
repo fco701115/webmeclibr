@@ -567,6 +567,7 @@
               <thead>
                 <tr>
                   <th>ID</th>
+                  <th>Icono</th>
                   <th>Título</th>
                   <th>Descripción</th>
                   <th>Condición</th>
@@ -1023,6 +1024,29 @@
                 <option value="true">Sí</option>
                 <option value="false">No</option>
               </select>
+            </div>
+          </div>
+          <div class="admin-input-group">
+            <label>Icono del cupón</label>
+            <input type="hidden" id="couponIcono">
+            <div class="coupon-icon-grid" id="couponIconGrid">
+              <img src="https://http2.mlstatic.com/D_Q_NP_630110-MLU108648422959_032026-G.jpg" alt="Icono 1" loading="lazy" onclick="selectCouponIcon(this.src)">
+              <img src="https://http2.mlstatic.com/D_Q_NP_988997-MLU107892143094_032026-G.jpg" alt="Icono 2" loading="lazy" onclick="selectCouponIcon(this.src)">
+              <img src="https://http2.mlstatic.com/D_Q_NP_712922-MLU114244986962_082026-Z.jpg" alt="Icono 3" loading="lazy" onclick="selectCouponIcon(this.src)">
+              <img src="https://http2.mlstatic.com/D_Q_NP_884838-MLU108649705121_032026-G.jpg" alt="Icono 4" loading="lazy" onclick="selectCouponIcon(this.src)">
+              <img src="https://http2.mlstatic.com/D_Q_NP_791759-MLU108648362777_032026-G.jpg" alt="Icono 5" loading="lazy" onclick="selectCouponIcon(this.src)">
+              <img src="https://http2.mlstatic.com/D_Q_NP_708209-MLU108649497285_032026-G.jpg" alt="Icono 6" loading="lazy" onclick="selectCouponIcon(this.src)">
+              <img src="https://http2.mlstatic.com/D_Q_NP_939948-MLU107892206446_032026-G.jpg" alt="Icono 7" loading="lazy" onclick="selectCouponIcon(this.src)">
+              <img src="https://http2.mlstatic.com/D_Q_NP_811857-MLU107892206006_032026-G.jpg" alt="Icono 8" loading="lazy" onclick="selectCouponIcon(this.src)">
+              <img src="https://http2.mlstatic.com/D_Q_NP_646003-MLU108649854843_032026-G.jpg" alt="Icono 9" loading="lazy" onclick="selectCouponIcon(this.src)">
+            </div>
+            <div class="coupon-icon-custom">
+              <input type="text" id="couponIconoCustom" placeholder="...o pegá otra URL de icono (https://...)" oninput="setCouponIconCustom(this.value)">
+              <button type="button" class="coupon-icon-clear" onclick="clearCouponIcon()">Quitar</button>
+            </div>
+            <div class="coupon-icon-preview" id="couponIconPreview" style="display:none">
+              <span>Vista previa:</span>
+              <img id="couponIconPreviewImg" src="" alt="Icono seleccionado">
             </div>
           </div>
         </div>

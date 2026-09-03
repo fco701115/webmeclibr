@@ -136,6 +136,7 @@ CREATE TABLE IF NOT EXISTS coupons (
   link_boton TEXT DEFAULT '#',
   vencimiento TIMESTAMPTZ,
   active BOOLEAN DEFAULT true,
+  icono TEXT DEFAULT '',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

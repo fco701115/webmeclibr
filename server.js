@@ -222,6 +222,7 @@ async function autoMigrate() {
         link_boton TEXT DEFAULT '#',
         vencimiento TIMESTAMPTZ,
         active BOOLEAN DEFAULT true,
+        icono TEXT DEFAULT '',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `);
@@ -233,6 +234,7 @@ async function autoMigrate() {
     await pool.query('ALTER TABLE coupons ADD COLUMN IF NOT EXISTS link_boton TEXT');
     await pool.query('ALTER TABLE coupons ADD COLUMN IF NOT EXISTS vencimiento TIMESTAMPTZ');
     await pool.query('ALTER TABLE coupons ADD COLUMN IF NOT EXISTS active BOOLEAN DEFAULT true');
+    await pool.query('ALTER TABLE coupons ADD COLUMN IF NOT EXISTS icono TEXT DEFAULT ' + "''");
     console.log('Auto-migración de coupons completada');
   } catch (err) {
     console.error('Error en auto-migración:', err.message);
@@ -1064,11 +1066,11 @@ app.get('/api/coupons', async (req, res) => {
 // POST create coupon
 app.post('/api/coupons', async (req, res) => {
   try {
-    const { titulo, descripcion, condicion, tope, titulo_boton, link_boton, vencimiento, active } = req.body;
+    const { titulo, descripcion, condicion, tope, titulo_boton, link_boton, vencimiento, active, icono } = req.body;
     if (!titulo || !String(titulo).trim()) return res.status(400).json({ error: 'El título es requerido' });
     const result = await pool.query(
-      `INSERT INTO coupons (titulo, descripcion, condicion, tope, titulo_boton, link_boton, vencimiento, active)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`,
+      `INSERT INTO coupons (titulo, descripcion, condicion, tope, titulo_boton, link_boton, vencimiento, active, icono)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *`,
       [
         String(titulo).trim(),
         descripcion || '',
@@ -1077,7 +1079,8 @@ app.post('/api/coupons', async (req, res) => {
         titulo_boton || 'Ver más',
         link_boton || '#',
         vencimiento || null,
-        active !== false
+        active !== false,
+        icono || ''
       ]
     );
     res.status(201).json(result.rows[0]);
@@ -1091,11 +1094,11 @@ app.post('/api/coupons', async (req, res) => {
 app.put('/api/coupons/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const { titulo, descripcion, condicion, tope, titulo_boton, link_boton, vencimiento, active } = req.body;
+    const { titulo, descripcion, condicion, tope, titulo_boton, link_boton, vencimiento, active, icono } = req.body;
     if (!titulo || !String(titulo).trim()) return res.status(400).json({ error: 'El título es requerido' });
     const result = await pool.query(
-      `UPDATE coupons SET titulo=$1, descripcion=$2, condicion=$3, tope=$4, titulo_boton=$5, link_boton=$6, vencimiento=$7, active=$8
-       WHERE id=$9 RETURNING *`,
+      `UPDATE coupons SET titulo=$1, descripcion=$2, condicion=$3, tope=$4, titulo_boton=$5, link_boton=$6, vencimiento=$7, active=$8, icono=$9
+       WHERE id=$10 RETURNING *`,
       [
         String(titulo).trim(),
         descripcion || '',
@@ -1105,6 +1108,7 @@ app.put('/api/coupons/:id', async (req, res) => {
         link_boton || '#',
         vencimiento || null,
         active !== false,
+        icono || '',
         id
       ]
     );

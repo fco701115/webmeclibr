@@ -1631,7 +1631,7 @@ function renderCoupons() {
     const btnLink = (c.link_boton || '#').trim() || '#';
     return `
     <div class="coupon-card ${expired ? 'expired' : ''}">
-      <div class="coupon-ticket-icon">🎟️</div>
+      ${c.icono ? `<img class="coupon-icon" src="${escapeHtml(c.icono)}" alt="${escapeHtml(c.titulo || 'Cupón')}" loading="lazy">` : '<div class="coupon-ticket-icon">🎟️</div>'}
       <h3>${escapeHtml(c.titulo || 'Cupón')}</h3>
       ${c.descripcion ? `<p class="coupon-desc">${escapeHtml(c.descripcion)}</p>` : ''}
       ${c.condicion ? `<p class="coupon-cond"><i class="fas fa-info-circle"></i> ${escapeHtml(c.condicion)}</p>` : ''}
@@ -3396,6 +3396,7 @@ async function loadAdminCoupons() {
     return `
     <tr>
       <td>${c.id}</td>
+      <td>${c.icono ? `<img src="${escapeHtml(c.icono)}" alt="" style="width:48px;height:48px;object-fit:cover;border-radius:8px">` : '<span style="color:#999">—</span>'}</td>
       <td>${escapeHtml(c.titulo || '')}</td>
       <td>${escapeHtml((c.descripcion || '').slice(0, 60))}${(c.descripcion || '').length > 60 ? '...' : ''}</td>
       <td>${escapeHtml(c.condicion || '-')}</td>
@@ -3428,6 +3429,7 @@ function showCouponModal() {
   document.getElementById('couponLinkBoton').value = '';
   document.getElementById('couponVencimiento').value = '';
   document.getElementById('couponActive').value = 'true';
+  setCouponIcon('');
   document.getElementById('couponModalTitle').textContent = 'Cargar cupón';
   document.getElementById('couponModal').style.display = 'flex';
 }
@@ -3448,8 +3450,52 @@ function editCouponById(id) {
   document.getElementById('couponLinkBoton').value = c.link_boton || '';
   document.getElementById('couponVencimiento').value = toDatetimeLocalValue(c.vencimiento);
   document.getElementById('couponActive').value = c.active ? 'true' : 'false';
+  setCouponIcon(c.icono || '');
   document.getElementById('couponModalTitle').textContent = 'Editar cupón';
   document.getElementById('couponModal').style.display = 'flex';
+}
+
+function setCouponIcon(url) {
+  const hidden = document.getElementById('couponIcono');
+  const custom = document.getElementById('couponIconoCustom');
+  const preview = document.getElementById('couponIconPreview');
+  const previewImg = document.getElementById('couponIconPreviewImg');
+  if (hidden) hidden.value = url || '';
+  if (custom && document.activeElement !== custom) custom.value = url || '';
+  document.querySelectorAll('#couponIconGrid img').forEach(img => {
+    img.classList.toggle('selected', !!url && img.src === url);
+  });
+  if (url && preview && previewImg) {
+    previewImg.src = url;
+    preview.style.display = 'flex';
+  } else if (preview) {
+    preview.style.display = 'none';
+  }
+}
+
+function selectCouponIcon(url) {
+  setCouponIcon(url);
+}
+
+function setCouponIconCustom(url) {
+  const hidden = document.getElementById('couponIcono');
+  if (hidden) hidden.value = (url || '').trim();
+  document.querySelectorAll('#couponIconGrid img').forEach(img => {
+    img.classList.toggle('selected', !!url && img.src === (url || '').trim());
+  });
+  const preview = document.getElementById('couponIconPreview');
+  const previewImg = document.getElementById('couponIconPreviewImg');
+  const clean = (url || '').trim();
+  if (clean && preview && previewImg) {
+    previewImg.src = clean;
+    preview.style.display = 'flex';
+  } else if (preview) {
+    preview.style.display = 'none';
+  }
+}
+
+function clearCouponIcon() {
+  setCouponIcon('');
 }
 
 async function saveCoupon() {
@@ -3462,12 +3508,15 @@ async function saveCoupon() {
   const link_boton = document.getElementById('couponLinkBoton').value.trim();
   const vencimientoRaw = document.getElementById('couponVencimiento').value;
   const active = document.getElementById('couponActive').value === 'true';
+  const iconoEl = document.getElementById('couponIcono');
+  const iconoCustom = document.getElementById('couponIconoCustom');
+  const icono = ((iconoEl && iconoEl.value) || (iconoCustom && iconoCustom.value) || '').trim();
 
   if (!titulo) { alert('El título es requerido'); return; }
   if (!vencimientoRaw) { alert('El vencimiento es requerido'); return; }
   const vencimiento = new Date(vencimientoRaw).toISOString();
 
-  const payload = { titulo, descripcion, condicion, tope, titulo_boton, link_boton, vencimiento, active };
+  const payload = { titulo, descripcion, condicion, tope, titulo_boton, link_boton, vencimiento, active, icono };
   let result;
   if (id) {
     result = await apiPut('/coupons/' + id, payload);

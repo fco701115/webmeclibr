@@ -7658,3 +7658,90 @@ button {
   margin-bottom: 12px;
   color: #ffc000;
 }
+
+.coupon-icon {
+  width: 90px;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin: 0 auto 4px;
+  display: block;
+}
+
+/* ========== COUPON ICON PICKER (ADMIN) ========== */
+.coupon-icon-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+@media (max-width: 768px) {
+  .coupon-icon-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.coupon-icon-grid img {
+  width: 100%;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 8px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: border-color 0.15s, transform 0.15s;
+}
+
+.coupon-icon-grid img:hover {
+  transform: scale(1.04);
+}
+
+.coupon-icon-grid img.selected {
+  border-color: #ffc000;
+  box-shadow: 0 0 0 2px #ffc000;
+}
+
+.coupon-icon-custom {
+  display: flex;
+  gap: 8px;
+}
+
+.coupon-icon-custom input {
+  flex: 1;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 0.9rem;
+  font-family: inherit;
+}
+
+.coupon-icon-clear {
+  background: #f0f0f0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0 14px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.coupon-icon-clear:hover {
+  background: #e0e0e0;
+}
+
+.coupon-icon-preview {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+  font-size: 0.85rem;
+  color: var(--text-light);
+}
+
+.coupon-icon-preview img {
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 2px solid #ffc000;
+}
