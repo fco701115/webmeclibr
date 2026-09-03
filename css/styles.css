@@ -819,7 +819,7 @@ button {
 .product-card {
   width: 248px;
   max-width: 100%;
-  height: 376px;
+  height: 398px;
   background: var(--card-bg);
   overflow: hidden;
   position: relative;
@@ -1262,6 +1262,38 @@ button {
 .detail-free-shipping .meli-full {
   font-weight: 800;
   letter-spacing: 0.3px;
+}
+
+/* Burbujas de insignia en tarjetas (después de la imagen) */
+.card-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 6px 0 0;
+}
+
+.card-badge {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  line-height: 1.4;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.card-badge-best {
+  background: #ff7733;
+}
+
+.card-badge-mega {
+  background: #3483fa;
+}
+
+.card-badge-rec {
+  background: #000;
 }
 
 /* Hover parallax effect */

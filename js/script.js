@@ -458,6 +458,15 @@ let currentView = 'home'; // home, detail, checkout, loading, error
 const categories = ['Todas', ...new Set(products.map(p => p.category))];
 
 // ========== RENDER PRODUCTS ==========
+
+// Burbujas de insignia en tarjetas (MAS VENDIDO / OFERTA IMPERDIBLE / RECOMENDADO)
+function cardBadgesHtml(p) {
+  const badges = [];
+  if (p.is_best_seller) badges.push('<span class="card-badge card-badge-best">MAS VENDIDO</span>');
+  if (p.is_mega_offer) badges.push('<span class="card-badge card-badge-mega">OFERTA IMPERDIBLE</span>');
+  if (p.is_recommended) badges.push('<span class="card-badge card-badge-rec">RECOMENDADO</span>');
+  return badges.length ? `<div class="card-badges">${badges.join('')}</div>` : '';
+}
 function productCardHtml(p) {
   const starsHtml = renderStars(p.rating);
   const originalPriceHtml = p.originalPrice
@@ -480,6 +489,7 @@ function productCardHtml(p) {
         </div>
         <button class="product-buy-btn" onclick="event.stopPropagation(); addToCart(${p.id})" style="background:#FFE600;color:#2D3277;"><img src="/Merado%20libre%202.png" alt="ML" class="buy-ml-icon"><i class="fas fa-shopping-cart buy-fa-icon"></i><span class="buy-btn-text">Comprar en Mercado Libre</span></button>
       </div>
+      ${cardBadgesHtml(p)}
       <div class="product-info">
         <div class="product-info-content">
           <h3 class="product-name">${p.name}</h3>
@@ -1139,6 +1149,7 @@ function showDetail(id) {
           </div>
           <button class="product-buy-btn" onclick="event.stopPropagation(); addToCart(${p.id})"><i class="fas fa-shopping-cart"></i><span class="buy-btn-text">Comprar en Mercado Libre</span></button>
         </div>
+        ${cardBadgesHtml(p)}
         <div class="product-info">
           <div class="product-info-content">
             <h3 class="product-name">${p.name}</h3>
@@ -2784,6 +2795,7 @@ function initSearch() {
         </div>
         <button class="product-buy-btn" onclick="event.stopPropagation(); addToCart(${p.id})" style="background:#FFE600;color:#2D3277;"><img src="/Merado%20libre%202.png" alt="ML" class="buy-ml-icon"><i class="fas fa-shopping-cart buy-fa-icon"></i><span class="buy-btn-text">Comprar en Mercado Libre</span></button>
       </div>
+      ${cardBadgesHtml(p)}
       <div class="product-info">
         <div class="product-info-content">
           <h3 class="product-name">${p.name}</h3>
