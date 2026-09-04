@@ -7673,16 +7673,22 @@ button {
 
 .coupon-btn {
   display: inline-block;
+  width: 37px;
+  height: 20px;
+  line-height: 20px;
+  padding: 0;
   margin-top: 4px;
   background: #ffc000;
   color: #151414;
   font-weight: 700;
-  font-size: 0.8rem;
+  font-size: 12px;
   border-radius: 6px;
-  padding: 7px 14px;
   text-decoration: none;
   text-align: center;
   align-self: flex-start;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   transition: background var(--transition);
 }
 
