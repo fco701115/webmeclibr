@@ -1631,21 +1631,25 @@ function renderCoupons() {
     const btnLink = (c.link_boton || '#').trim() || '#';
     return `
     <div class="coupon-card ${expired ? 'expired' : ''}">
-      ${c.icono ? `<img class="coupon-icon" src="${escapeHtml(c.icono)}" alt="${escapeHtml(c.titulo || 'Cupón')}" loading="lazy">` : '<div class="coupon-ticket-icon">🎟️</div>'}
-      <h3>${escapeHtml(c.titulo || 'Cupón')}</h3>
-      ${c.descripcion ? `<p class="coupon-desc">${escapeHtml(c.descripcion)}</p>` : ''}
-      ${c.condicion ? `<p class="coupon-cond"><i class="fas fa-info-circle"></i> ${escapeHtml(c.condicion)}</p>` : ''}
-      ${c.tope ? `<p class="coupon-tope"><i class="fas fa-arrow-down"></i> Tope: ${escapeHtml(c.tope)}</p>` : ''}
-      ${c.vencimiento ? `
-        <div class="coupon-expiry ${expired ? 'is-expired' : ''}">
-          ${expired
-            ? '<span class="coupon-expired-label">Vencido</span>'
-            : `<span class="coupon-vence">${escapeHtml(venceLabel)}</span>
-               <span class="coupon-countdown" data-vencimiento="${escapeHtml(c.vencimiento)}">${countdown || ''}</span>`}
-        </div>` : ''}
-      ${expired
-        ? `<span class="coupon-btn disabled">Vencido</span>`
-        : `<a class="coupon-btn" href="${escapeHtml(btnLink)}" target="_blank" rel="noopener">${escapeHtml(btnTitle)}</a>`}
+      <div class="coupon-logo">
+        ${c.icono ? `<img src="${escapeHtml(c.icono)}" alt="${escapeHtml(c.titulo || 'Cupón')}" loading="lazy">` : '<div class="coupon-ticket-icon">🎟️</div>'}
+      </div>
+      <div class="coupon-info">
+        <h3>${escapeHtml(c.titulo || 'Cupón')}</h3>
+        ${c.descripcion ? `<p class="coupon-desc">${escapeHtml(c.descripcion)}</p>` : ''}
+        ${c.condicion ? `<p class="coupon-cond"><i class="fas fa-home"></i> ${escapeHtml(c.condicion)}</p>` : ''}
+        ${c.tope ? `<p class="coupon-tope"><i class="fas fa-arrow-down"></i> Tope: ${escapeHtml(c.tope)}</p>` : ''}
+        ${c.vencimiento ? `
+          <div class="coupon-expiry ${expired ? 'is-expired' : ''}">
+            ${expired
+              ? '<span class="coupon-expired-label">Vencido</span>'
+              : `<span class="coupon-vence">${escapeHtml(venceLabel)}</span>
+                 <span class="coupon-countdown" data-vencimiento="${escapeHtml(c.vencimiento)}">${countdown || ''}</span>`}
+          </div>` : ''}
+        ${expired
+          ? `<span class="coupon-btn disabled">Vencido</span>`
+          : `<a class="coupon-btn" href="${escapeHtml(btnLink)}" target="_blank" rel="noopener">${escapeHtml(btnTitle)}</a>`}
+      </div>
     </div>`;
   }).join('');
 }
