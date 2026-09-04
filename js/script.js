@@ -1639,18 +1639,16 @@ function renderCoupons() {
         ${c.descripcion ? `<p class="coupon-desc">${escapeHtml(c.descripcion)}</p>` : ''}
         ${c.condicion ? `<p class="coupon-cond"><i class="fas fa-home"></i> ${escapeHtml(c.condicion)}</p>` : ''}
         ${c.tope ? `<p class="coupon-tope"><i class="fas fa-arrow-down"></i> Tope: ${escapeHtml(c.tope)}</p>` : ''}
-        <div class="coupon-bottom">
-          ${c.vencimiento ? `
-            <div class="coupon-expiry ${expired ? 'is-expired' : ''}">
-              ${expired
-                ? '<span class="coupon-expired-label">Vencido</span>'
-                : `<span class="coupon-vence">${escapeHtml(venceLabel)}</span>
-                   <span class="coupon-countdown" data-vencimiento="${escapeHtml(c.vencimiento)}">${countdown || ''}</span>`}
-            </div>` : '<span></span>'}
-          ${expired
-            ? `<span class="coupon-btn disabled">Vencido</span>`
-            : `<a class="coupon-btn" href="${escapeHtml(btnLink)}" target="_blank" rel="noopener">${escapeHtml(btnTitle)}</a>`}
-        </div>
+        ${c.vencimiento ? `
+          <div class="coupon-expiry ${expired ? 'is-expired' : ''}">
+            ${expired
+              ? '<span class="coupon-expired-label">Vencido</span>'
+              : `<span class="coupon-vence">${escapeHtml(venceLabel)}</span>
+                 <span class="coupon-countdown" data-vencimiento="${escapeHtml(c.vencimiento)}">${countdown || ''}</span>`}
+          </div>` : ''}
+        ${expired
+          ? `<span class="coupon-btn disabled">Vencido</span>`
+          : `<a class="coupon-btn" href="${escapeHtml(btnLink)}" target="_blank" rel="noopener">${escapeHtml(btnTitle)}</a>`}
       </div>
     </div>`;
   }).join('');
