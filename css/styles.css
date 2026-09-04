@@ -7527,8 +7527,14 @@ button {
 
 .coupons-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+
+@media (max-width: 1024px) {
+  .coupons-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 @media (max-width: 768px) {
@@ -7546,7 +7552,7 @@ button {
   flex-direction: row;
   align-items: stretch;
   overflow: hidden;
-  min-height: 200px;
+  min-height: 140px;
   text-align: left;
 }
 
@@ -7557,8 +7563,8 @@ button {
 }
 
 .coupon-logo {
-  width: 150px;
-  min-height: 200px;
+  width: 75px;
+  min-height: 140px;
   flex-shrink: 0;
   display: flex;
   align-items: center;
@@ -7575,7 +7581,7 @@ button {
 .coupon-logo img {
   width: 100%;
   height: 100%;
-  min-height: 200px;
+  min-height: 140px;
   object-fit: cover;
   display: block;
 }
@@ -7584,57 +7590,57 @@ button {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  padding: 16px 18px;
+  gap: 4px;
+  padding: 10px 12px;
   min-width: 0;
 }
 
 @media (max-width: 480px) {
   .coupon-logo {
-    width: 110px;
+    width: 90px;
   }
   .coupon-info {
-    padding: 12px 14px;
+    padding: 10px 12px;
   }
 }
 
 .coupon-ticket-icon {
-  font-size: 2rem;
+  font-size: 1.5rem;
   line-height: 1;
 }
 
 .coupon-card h3 {
-  font-size: 1.2rem;
+  font-size: 0.95rem;
   font-weight: 700;
-  margin-bottom: 4px;
+  margin-bottom: 2px;
   color: var(--text);
 }
 
 .coupon-card p {
   color: var(--text-light);
-  font-size: 0.9rem;
-  margin-bottom: 4px;
+  font-size: 0.75rem;
+  margin-bottom: 2px;
 }
 
 .coupon-desc {
-  font-size: 0.92rem;
+  font-size: 0.78rem;
 }
 
 .coupon-cond,
 .coupon-tope {
-  font-size: 0.82rem;
+  font-size: 0.7rem;
   background: #f8f8f8;
-  border-radius: 8px;
-  padding: 6px 10px;
+  border-radius: 6px;
+  padding: 4px 8px;
 }
 
 .coupon-expiry {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 3px;
   align-items: flex-start;
-  margin: 8px 0;
-  font-size: 0.85rem;
+  margin: 4px 0;
+  font-size: 0.72rem;
   font-weight: 600;
 }
 
@@ -7646,9 +7652,9 @@ button {
   font-family: monospace;
   background: #151414;
   color: #ffe600;
-  border-radius: 8px;
-  padding: 4px 12px;
-  font-size: 0.9rem;
+  border-radius: 6px;
+  padding: 3px 8px;
+  font-size: 0.75rem;
   letter-spacing: 1px;
 }
 
@@ -7660,19 +7666,20 @@ button {
   background: #e74c3c;
   color: #fff;
   border-radius: 20px;
-  padding: 4px 16px;
+  padding: 3px 12px;
   font-weight: 800;
-  font-size: 0.85rem;
+  font-size: 0.72rem;
 }
 
 .coupon-btn {
   display: inline-block;
-  margin-top: 8px;
+  margin-top: 4px;
   background: #ffc000;
   color: #151414;
   font-weight: 700;
-  border-radius: 8px;
-  padding: 10px 22px;
+  font-size: 0.8rem;
+  border-radius: 6px;
+  padding: 7px 14px;
   text-decoration: none;
   text-align: center;
   align-self: flex-start;
