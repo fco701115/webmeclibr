@@ -7563,7 +7563,7 @@ button {
 }
 
 .coupon-logo {
-  width: 75px;
+  width: 38px;
   min-height: 140px;
   flex-shrink: 0;
   display: flex;
@@ -7597,7 +7597,7 @@ button {
 
 @media (max-width: 480px) {
   .coupon-logo {
-    width: 90px;
+    width: 45px;
   }
   .coupon-info {
     padding: 10px 12px;
