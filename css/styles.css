@@ -7648,6 +7648,14 @@ button {
   color: #b77900;
 }
 
+.coupon-countdown-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  align-self: stretch;
+  gap: 8px;
+}
+
 .coupon-countdown {
   font-family: monospace;
   background: #151414;
@@ -7677,7 +7685,7 @@ button {
   height: 22px;
   line-height: 22px;
   padding: 0;
-  margin-top: 4px;
+  margin-top: 0;
   background: #ffc000;
   color: #151414;
   font-weight: 700;
@@ -7685,7 +7693,8 @@ button {
   border-radius: 6px;
   text-decoration: none;
   text-align: center;
-  align-self: flex-start;
+  align-self: center;
+  flex-shrink: 0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
