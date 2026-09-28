@@ -3454,12 +3454,23 @@ button {
     height: 60px;
     padding: 8px 10px;
     gap: 8px;
-    background: #ffe600;
+    background: #ffffff;
     color: #151414;
   }
 
   .header-inner .icon-btn {
     color: #ffffff;
+  }
+
+  .header-inner .search-mobile-btn i,
+  .header-inner .wishlist-btn i {
+    color: #fff;
+    -webkit-text-stroke: 1px #000;
+    text-shadow:
+      -1px -1px 0 #000,
+      1px -1px 0 #000,
+      -1px 1px 0 #000,
+      1px 1px 0 #000;
   }
 
   .header-inner .login-btn {
