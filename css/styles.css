@@ -4934,6 +4934,16 @@ button {
   color: #333;
 }
 
+.bottom-nav-item .fa-ticket-alt {
+  color: #fff;
+  -webkit-text-stroke: 1px #000;
+  text-shadow:
+    -1px -1px 0 #000,
+    1px -1px 0 #000,
+    -1px 1px 0 #000,
+    1px 1px 0 #000;
+}
+
 .bottom-nav-item.active i,
 .bottom-nav-item.active span {
   color: #ffc000;
