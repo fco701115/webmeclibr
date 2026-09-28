@@ -21,6 +21,7 @@ CREATE TABLE IF NOT EXISTS products (
   is_best_seller BOOLEAN DEFAULT FALSE,
   is_mega_offer BOOLEAN DEFAULT FALSE,
   is_recommended BOOLEAN DEFAULT FALSE,
+  is_free_shipping_full BOOLEAN DEFAULT FALSE,
   show_sizes BOOLEAN DEFAULT TRUE,
   show_colors BOOLEAN DEFAULT TRUE,
   detail TEXT DEFAULT '',

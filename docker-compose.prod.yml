@@ -24,7 +24,7 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=3004
-      - DB_HOST=app-webmeclibr-e8oo6m
+      - DB_HOST=db
       - DB_NAME=bd-webmeclibr
       - DB_USER=fco-webmeclibr
       - DB_PASSWORD=t9AWyMXGauynSI4B58I6

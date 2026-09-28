@@ -162,17 +162,157 @@ const pool = new Pool(
 const cache = {};
 const CACHE_TTL = 15000; // 15 seconds
 
-// Auto-migrate: add missing columns to orders and products tables
+// Auto-migrate: crear tablas base si no existen + agregar columnas faltantes
+// Esto es necesario en Dokploy porque /docker-entrypoint-initdb.d solo corre
+// en el primer arranque del volumen. Si la DB se provisionó vacía, sin esto
+// todas las queries fallan con 'relation "xxx" does not exist'.
 async function autoMigrate() {
   try {
-    // Check if orders table exists
-    const tableCheck = await pool.query(
-      "SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'orders')"
-    );
-    if (!tableCheck.rows[0].exists) {
-      console.log('Tabla orders no existe aún, omitiendo auto-migración');
-      return;
-    }
+    // 1. Crear tablas base (idempotente)
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS products (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        price DECIMAL(10,2) NOT NULL,
+        original_price DECIMAL(10,2),
+        discount INTEGER DEFAULT 0,
+        stock INTEGER DEFAULT 0,
+        rating DECIMAL(2,1) DEFAULT 0,
+        reviews INTEGER DEFAULT 0,
+        category VARCHAR(100) NOT NULL,
+        sizes TEXT DEFAULT '',
+        colors TEXT DEFAULT '',
+        image TEXT,
+        images JSONB DEFAULT '[]',
+        description TEXT,
+        characteristics TEXT DEFAULT '',
+        meli_url TEXT DEFAULT '',
+        is_best_seller BOOLEAN DEFAULT FALSE,
+        is_mega_offer BOOLEAN DEFAULT FALSE,
+        is_recommended BOOLEAN DEFAULT FALSE,
+        is_free_shipping_full BOOLEAN DEFAULT FALSE,
+        show_sizes BOOLEAN DEFAULT TRUE,
+        show_colors BOOLEAN DEFAULT TRUE,
+        detail TEXT DEFAULT '',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS categories (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(100) NOT NULL UNIQUE,
+        image TEXT
+      )
+    `);
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS orders (
+        id SERIAL PRIMARY KEY,
+        customer_name VARCHAR(255) NOT NULL,
+        email VARCHAR(255) NOT NULL,
+        phone VARCHAR(50),
+        address TEXT,
+        address_type VARCHAR(50) DEFAULT 'Casa',
+        address_street TEXT DEFAULT '',
+        address_locality TEXT DEFAULT '',
+        address_instructions TEXT DEFAULT '',
+        address_neighborhood TEXT DEFAULT '',
+        address_city TEXT DEFAULT '',
+        address_zip TEXT DEFAULT '',
+        city VARCHAR(100),
+        zip_code VARCHAR(20),
+        payment_method VARCHAR(50),
+        items JSONB,
+        total DECIMAL(10,2),
+        status VARCHAR(50) DEFAULT 'Pendiente',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS slides (
+        id SERIAL PRIMARY KEY,
+        title VARCHAR(255) NOT NULL,
+        subtitle TEXT DEFAULT '',
+        link TEXT DEFAULT '#',
+        image TEXT,
+        button_text VARCHAR(100) DEFAULT 'Ver más',
+        sort_order INTEGER DEFAULT 0,
+        active BOOLEAN DEFAULT true
+      )
+    `);
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS split_banners (
+        id SERIAL PRIMARY KEY,
+        title VARCHAR(255) NOT NULL,
+        subtitle TEXT DEFAULT '',
+        link TEXT DEFAULT '#',
+        image TEXT,
+        button_text VARCHAR(100) DEFAULT 'Ver más',
+        position INTEGER DEFAULT 1,
+        active BOOLEAN DEFAULT true
+      )
+    `);
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS reviews (
+        id SERIAL PRIMARY KEY,
+        product_id INTEGER REFERENCES products(id) ON DELETE CASCADE,
+        user_name VARCHAR(255) NOT NULL,
+        email VARCHAR(255) DEFAULT '',
+        rating INTEGER NOT NULL CHECK (rating >= 1 AND rating <= 5),
+        title VARCHAR(255) DEFAULT '',
+        comment TEXT DEFAULT '',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS users (
+        id SERIAL PRIMARY KEY,
+        first_name VARCHAR(255) NOT NULL,
+        last_name VARCHAR(255) NOT NULL,
+        email VARCHAR(255) NOT NULL UNIQUE,
+        phone VARCHAR(50) DEFAULT '',
+        password VARCHAR(255) NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS blogs (
+        id SERIAL PRIMARY KEY,
+        title VARCHAR(255) NOT NULL,
+        excerpt TEXT DEFAULT '',
+        content TEXT DEFAULT '',
+        image TEXT,
+        author VARCHAR(255) DEFAULT 'Admin',
+        active BOOLEAN DEFAULT true,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS blog_comments (
+        id SERIAL PRIMARY KEY,
+        blog_id INTEGER REFERENCES blogs(id) ON DELETE CASCADE,
+        user_name VARCHAR(255) NOT NULL,
+        comment TEXT DEFAULT '',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS coupons (
+        id SERIAL PRIMARY KEY,
+        titulo VARCHAR(255) NOT NULL DEFAULT '',
+        descripcion TEXT DEFAULT '',
+        condicion TEXT DEFAULT '',
+        tope VARCHAR(255) DEFAULT '',
+        titulo_boton VARCHAR(255) DEFAULT 'Ver más',
+        link_boton TEXT DEFAULT '#',
+        vencimiento TIMESTAMPTZ,
+        active BOOLEAN DEFAULT true,
+        icono TEXT DEFAULT '',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+    console.log('Tablas base verificadas/creadas');
+
+    // 2. Evolución de columnas (por si la tabla ya existía con esquema viejo)
     const columns = [
       ['address_type', "VARCHAR(50) DEFAULT 'Casa'"],
       ['address_street', "TEXT DEFAULT ''"],
@@ -189,43 +329,26 @@ async function autoMigrate() {
     await pool.query("UPDATE orders SET status = 'Pendiente' WHERE status = 'pending'");
     console.log('Auto-migración de orders completada');
 
-    // Add characteristics column to products table if it doesn't exist
-    const prodTableCheck = await pool.query(
-      "SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'products')"
-    );
-    if (prodTableCheck.rows[0].exists) {
-      await pool.query("ALTER TABLE products ADD COLUMN IF NOT EXISTS characteristics TEXT DEFAULT ''");
-      await pool.query("ALTER TABLE products ADD COLUMN IF NOT EXISTS meli_url TEXT DEFAULT ''");
-      await pool.query("ALTER TABLE products ADD COLUMN IF NOT EXISTS is_best_seller BOOLEAN DEFAULT FALSE");
-      await pool.query("ALTER TABLE products ADD COLUMN IF NOT EXISTS is_mega_offer BOOLEAN DEFAULT FALSE");
-      await pool.query("ALTER TABLE products ADD COLUMN IF NOT EXISTS is_recommended BOOLEAN DEFAULT FALSE");
-      await pool.query("ALTER TABLE products ADD COLUMN IF NOT EXISTS is_free_shipping_full BOOLEAN DEFAULT FALSE");
-      await pool.query("ALTER TABLE products ADD COLUMN IF NOT EXISTS show_sizes BOOLEAN DEFAULT TRUE");
-      await pool.query("ALTER TABLE products ADD COLUMN IF NOT EXISTS show_colors BOOLEAN DEFAULT TRUE");
-      await pool.query("ALTER TABLE products ADD COLUMN IF NOT EXISTS detail TEXT DEFAULT ''");
-      console.log('Auto-migración de products completada');
-    }
+    // Add missing columns to products table (por si existía con esquema viejo)
+    await pool.query("ALTER TABLE products ADD COLUMN IF NOT EXISTS characteristics TEXT DEFAULT ''");
+    await pool.query("ALTER TABLE products ADD COLUMN IF NOT EXISTS meli_url TEXT DEFAULT ''");
+    await pool.query("ALTER TABLE products ADD COLUMN IF NOT EXISTS is_best_seller BOOLEAN DEFAULT FALSE");
+    await pool.query("ALTER TABLE products ADD COLUMN IF NOT EXISTS is_mega_offer BOOLEAN DEFAULT FALSE");
+    await pool.query("ALTER TABLE products ADD COLUMN IF NOT EXISTS is_recommended BOOLEAN DEFAULT FALSE");
+    await pool.query("ALTER TABLE products ADD COLUMN IF NOT EXISTS is_free_shipping_full BOOLEAN DEFAULT FALSE");
+    await pool.query("ALTER TABLE products ADD COLUMN IF NOT EXISTS show_sizes BOOLEAN DEFAULT TRUE");
+    await pool.query("ALTER TABLE products ADD COLUMN IF NOT EXISTS show_colors BOOLEAN DEFAULT TRUE");
+    await pool.query("ALTER TABLE products ADD COLUMN IF NOT EXISTS detail TEXT DEFAULT ''");
+    await pool.query("ALTER TABLE products ADD COLUMN IF NOT EXISTS stock INTEGER DEFAULT 0");
+    await pool.query("ALTER TABLE products ADD COLUMN IF NOT EXISTS sizes TEXT DEFAULT ''");
+    await pool.query("ALTER TABLE products ADD COLUMN IF NOT EXISTS colors TEXT DEFAULT ''");
+    console.log('Auto-migración de products completada');
 
     // Clear cache after migration
     Object.keys(cache).forEach(k => delete cache[k]);
     console.log('Caché limpiado después de auto-migración');
 
-    // Create coupons table if it doesn't exist
-    await pool.query(`
-      CREATE TABLE IF NOT EXISTS coupons (
-        id SERIAL PRIMARY KEY,
-        titulo VARCHAR(255) NOT NULL DEFAULT '',
-        descripcion TEXT DEFAULT '',
-        condicion TEXT DEFAULT '',
-        tope VARCHAR(255) DEFAULT '',
-        titulo_boton VARCHAR(255) DEFAULT 'Ver más',
-        link_boton TEXT DEFAULT '#',
-        vencimiento TIMESTAMPTZ,
-        active BOOLEAN DEFAULT true,
-        icono TEXT DEFAULT '',
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-      )
-    `);
+    // Coupons: solo asegurar columnas evolutivas (la tabla ya se creó arriba)
     await pool.query('ALTER TABLE coupons ADD COLUMN IF NOT EXISTS titulo VARCHAR(255)');
     await pool.query('ALTER TABLE coupons ADD COLUMN IF NOT EXISTS descripcion TEXT');
     await pool.query('ALTER TABLE coupons ADD COLUMN IF NOT EXISTS condicion TEXT');
