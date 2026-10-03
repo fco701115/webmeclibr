@@ -555,6 +555,8 @@ function showAllCategories() {
   }
   const title = document.getElementById('categoryTitle');
   if (title) title.textContent = 'Todas las Categorías';
+  const breadcrumb = document.getElementById('categoryBreadcrumbName');
+  if (breadcrumb) breadcrumb.textContent = 'Todas las Categorías';
   const grid = document.getElementById('allCategoriesGrid');
   const productsGrid = document.getElementById('categoryProductsGrid');
   if (grid) {
@@ -590,6 +592,8 @@ function showCategoryPage(category) {
   activeCategory = category;
   const title = document.getElementById('categoryTitle');
   if (title) title.textContent = category;
+  const breadcrumb = document.getElementById('categoryBreadcrumbName');
+  if (breadcrumb) breadcrumb.textContent = category;
   const allGrid = document.getElementById('allCategoriesGrid');
   if (allGrid) allGrid.style.display = 'none';
   const productsGrid = document.getElementById('categoryProductsGrid');

@@ -1341,13 +1341,11 @@
 
   <!-- ===== CATEGORY VIEW ===== -->
   <div id="categoryView" style="display:none">
-    <section class="catalog-section" style="padding-top:30px">
-      <div class="catalog-header">
-        <div>
-          <a href="#" onclick="event.preventDefault(); goHome()" class="category-back"><i class="fas fa-chevron-left"></i> Volver al inicio</a>
-          <h2 class="section-title catalog-title" id="categoryTitle">Categoría</h2>
-        </div>
-      </div>
+    <div class="contact-hero">
+      <h1 id="categoryTitle">Categoría</h1>
+      <div class="contact-breadcrumb"><a href="#" onclick="goHome()">Inicio</a> / <span id="categoryBreadcrumbName">Categoría</span></div>
+    </div>
+    <section class="catalog-section" style="padding-top:30px; padding-bottom:60px">
       <div class="categories-grid" id="allCategoriesGrid" style="display:none"></div>
       <div class="products-grid" id="categoryProductsGrid"></div>
     </section>
