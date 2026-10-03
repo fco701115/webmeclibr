@@ -1190,12 +1190,13 @@ function showDetail(id) {
             </div>
           `).join('')}
         </div>
-        <div class="detail-main-img-wrapper">
-          <button class="gallery-arrow gallery-prev" onclick="prevDetailImg()"><i class="fas fa-chevron-left"></i></button>
-          <button class="mobile-img-arrow mobile-img-prev" onclick="prevDetailImg()"><i class="fas fa-chevron-left"></i></button>
+        <div class="detail-main-img-wrapper" id="detailZoomWrapper" onmousemove="detailZoomMove(event)" onmouseleave="detailZoomOut()" onclick="openDetailZoom()">
+          <button class="gallery-arrow gallery-prev" onclick="event.stopPropagation(); prevDetailImg()"><i class="fas fa-chevron-left"></i></button>
+          <button class="mobile-img-arrow mobile-img-prev" onclick="event.stopPropagation(); prevDetailImg()"><i class="fas fa-chevron-left"></i></button>
           <img src="${product.images[0]}" alt="${product.name}" id="detailMainImg">
-          <button class="gallery-arrow gallery-next" onclick="nextDetailImg()"><i class="fas fa-chevron-right"></i></button>
-          <button class="mobile-img-arrow mobile-img-next" onclick="nextDetailImg()"><i class="fas fa-chevron-right"></i></button>
+          <button class="gallery-arrow gallery-next" onclick="event.stopPropagation(); nextDetailImg()"><i class="fas fa-chevron-right"></i></button>
+          <button class="mobile-img-arrow mobile-img-next" onclick="event.stopPropagation(); nextDetailImg()"><i class="fas fa-chevron-right"></i></button>
+          <span class="detail-zoom-hint" onclick="event.stopPropagation(); openDetailZoom()"><i class="fas fa-search-plus"></i> Zoom</span>
         </div>
       </div>
 
@@ -1738,9 +1739,119 @@ function changeDetailImg(index) {
   const mainImg = document.getElementById('detailMainImg');
   const thumbs = document.querySelectorAll('.detail-thumb');
 
-  if (mainImg) mainImg.src = currentDetailImages[index];
+  if (mainImg) {
+    mainImg.src = currentDetailImages[index];
+    // Resetear zoom al cambiar de imagen
+    mainImg.classList.remove('zoomed');
+    mainImg.style.transformOrigin = 'center center';
+    mainImg.style.transform = '';
+  }
   thumbs.forEach((t, i) => t.classList.toggle('active', i === index));
+  // Sincronizar modal de zoom si está abierto
+  const zoomImg = document.getElementById('detailZoomImg');
+  if (zoomImg && document.getElementById('detailZoomModal').style.display === 'flex') {
+    zoomImg.src = currentDetailImages[index];
+    resetDetailZoomPan();
+  }
 }
+
+// ========== ZOOM IMAGEN DETALLE ==========
+// Lupa con mouse: acerca la imagen siguiendo el cursor (solo desktop con hover)
+function detailZoomMove(e) {
+  if (window.matchMedia('(hover: none)').matches) return;
+  const wrapper = document.getElementById('detailZoomWrapper');
+  const img = document.getElementById('detailMainImg');
+  if (!wrapper || !img) return;
+  const rect = wrapper.getBoundingClientRect();
+  const x = ((e.clientX - rect.left) / rect.width) * 100;
+  const y = ((e.clientY - rect.top) / rect.height) * 100;
+  img.style.transformOrigin = `${x}% ${y}%`;
+  img.classList.add('zoomed');
+}
+
+function detailZoomOut() {
+  const img = document.getElementById('detailMainImg');
+  if (!img) return;
+  img.classList.remove('zoomed');
+  img.style.transformOrigin = 'center center';
+}
+
+// Lightbox fullscreen (funciona en desktop y móvil)
+let detailZoomScale = 1;
+
+function openDetailZoom() {
+  if (!currentDetailImages || currentDetailImages.length === 0) return;
+  const modal = document.getElementById('detailZoomModal');
+  const img = document.getElementById('detailZoomImg');
+  if (!modal || !img) return;
+  img.src = currentDetailImages[currentDetailMainIndex] || '';
+  resetDetailZoomPan();
+  updateDetailZoomCounter();
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+function closeDetailZoom() {
+  const modal = document.getElementById('detailZoomModal');
+  if (modal) modal.style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+function detailZoomNav(dir) {
+  if (!currentDetailImages || currentDetailImages.length === 0) return;
+  let next = currentDetailMainIndex + dir;
+  if (next < 0) next = currentDetailImages.length - 1;
+  if (next >= currentDetailImages.length) next = 0;
+  changeDetailImg(next);
+  const img = document.getElementById('detailZoomImg');
+  if (img) img.src = currentDetailImages[next] || '';
+  resetDetailZoomPan();
+  updateDetailZoomCounter();
+}
+
+function updateDetailZoomCounter() {
+  const counter = document.getElementById('detailZoomCounter');
+  if (counter && currentDetailImages.length > 0) {
+    counter.textContent = (currentDetailMainIndex + 1) + ' / ' + currentDetailImages.length;
+  }
+}
+
+function toggleDetailZoomPan() {
+  const img = document.getElementById('detailZoomImg');
+  if (!img) return;
+  detailZoomScale = detailZoomScale === 1 ? 2 : 1;
+  img.style.transform = detailZoomScale === 1 ? '' : `scale(${detailZoomScale})`;
+  img.classList.toggle('zoomed', detailZoomScale > 1);
+}
+
+function resetDetailZoomPan() {
+  detailZoomScale = 1;
+  const img = document.getElementById('detailZoomImg');
+  if (img) {
+    img.style.transform = '';
+    img.style.transformOrigin = 'center center';
+    img.classList.remove('zoomed');
+  }
+}
+
+function detailZoomModalMove(e) {
+  const img = document.getElementById('detailZoomImg');
+  if (!img || detailZoomScale === 1) return;
+  if (window.matchMedia('(hover: none)').matches) return;
+  const rect = e.currentTarget.getBoundingClientRect();
+  const x = ((e.clientX - rect.left) / rect.width) * 100;
+  const y = ((e.clientY - rect.top) / rect.height) * 100;
+  img.style.transformOrigin = `${x}% ${y}%`;
+}
+
+// Cerrar con Escape y navegar con flechas
+document.addEventListener('keydown', (e) => {
+  const modal = document.getElementById('detailZoomModal');
+  if (!modal || modal.style.display !== 'flex') return;
+  if (e.key === 'Escape') closeDetailZoom();
+  if (e.key === 'ArrowLeft') detailZoomNav(-1);
+  if (e.key === 'ArrowRight') detailZoomNav(1);
+});
 
 // ========== VIEW MANAGEMENT ==========
 function showView(view) {

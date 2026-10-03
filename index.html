@@ -1774,6 +1774,18 @@
     </div>
   </div>
 
+  <!-- Detail Zoom Lightbox -->
+  <div id="detailZoomModal" class="detail-zoom-overlay" style="display:none" onclick="if(event.target===this) closeDetailZoom()">
+    <button class="detail-zoom-close" onclick="closeDetailZoom()"><i class="fas fa-times"></i></button>
+    <span class="detail-zoom-counter" id="detailZoomCounter">1 / 1</span>
+    <button class="detail-zoom-arrow detail-zoom-prev" onclick="event.stopPropagation(); detailZoomNav(-1)"><i class="fas fa-chevron-left"></i></button>
+    <div class="detail-zoom-body" onmousemove="detailZoomModalMove(event)">
+      <img id="detailZoomImg" src="" alt="Zoom producto" onclick="toggleDetailZoomPan()" draggable="false">
+    </div>
+    <button class="detail-zoom-arrow detail-zoom-next" onclick="event.stopPropagation(); detailZoomNav(1)"><i class="fas fa-chevron-right"></i></button>
+    <div class="detail-zoom-footer">Click en la imagen para acercar / alejar &nbsp;•&nbsp; ESC para cerrar</div>
+  </div>
+
   <script src="/js/script.js?v=2"></script>
 </body>
 </html>
